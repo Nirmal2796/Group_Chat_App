@@ -1,0 +1,75 @@
+*{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h1{
+    justify-self: center;
+    color:  rgb(110, 110, 224);
+}
+main{
+    /* border: 2px solid rgb(110, 110, 224);; */
+    /* margin-top: 5%; */
+    width: 90vw;
+    justify-self: center;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+}
+.upper_window{
+    display: flex;
+    height: 70vh;
+    justify-self: center;
+}
+
+.online_user_div{
+    background-color: rgb(185, 185, 229);
+    width: 15vw;
+    border-radius: 20px 0 0 0;
+    border-right: 5px solid white;
+
+}
+
+#online_user_list{
+    list-style: none;
+    line-height: 30px;
+    color: black;
+    
+}
+
+
+.chat_window{
+    background-color: rgb(66, 66, 233);
+    width: 80vw;
+    padding-left: 50px;
+    font-size: large;
+    border-radius: 0 20px 0 0 ;
+}
+
+.chat_send{
+    justify-self: center;
+    align-content: center;
+    height: 10vh;
+    background-color: rgb(107, 107, 177);
+    border-radius: 0 0 20px 20px ;
+}
+
+#send{
+    justify-self: center;
+}
+
+#send input{
+    width: 40vw;
+    height: 5vh;
+}
+
+#send button{
+    width: 7vw;
+    height: 7vh;
+    border: none;
+    border-radius: 10px;
+    background-color: rgb(36, 36, 114);
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
