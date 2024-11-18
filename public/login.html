@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group_Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <div class="sign_up_div">
+
+            <form action="" class="sign_up" id="sign_up_form">
+    
+                <div id="sign_up_msg"></div>
+                <div class="sign_up_form_input">
+                    <label for="sign_up_name">Name</label>
+                    <input type="text" id="sign_up_name">
+                </div>
+                <div class="sign_up_form_input">
+                    <label for="sign_up_email">Email</label>
+                    <input type="email" id="sign_up_email">
+                </div>
+                <div class="sign_up_form_input">
+                    <label for="sign_up_phone">Phone Number</label>
+                    <input type="text" id="sign_up_phone">
+                </div>
+                <div class="sign_up_form_input">
+                    <label for="sign_up_password">Password</label>
+                    <input type="password" id="sign_up_password">
+                </div>
+        
+                <button type="submit" id="sign_up_submit">SUBMIT</button>
+
+                <div id="sign_up_error"></div>
+            </form>
+        </div>
+
+        <div class="login_div">
+            <form action="" class="login" id="login_form">
+    
+                <div id="login_msg"></div>
+                
+                <div class="login_form_input">
+                    <label for="login_email">Email</label>
+                    <input type="email" id="login_email">
+                </div>
+                
+                <div class="login_form_input">
+                    <label for="login_password">Password</label>
+                    <input type="password" id="login_password">
+                </div>
+        
+                <button type="submit" id="login_submit">SUBMIT</button>
+
+                <div id="login_error"></div>
+            </form>
+        </div>
+    </main>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
