@@ -4,7 +4,8 @@
 
 h1{
     justify-self: center;
-    color:  rgb(110, 110, 224);
+    color:  rgb(21, 21, 83);
+    filter: drop-shadow(rgb(21, 21, 83) 10px 10px 10px);
 }
 main{
     /* border: 2px solid rgb(110, 110, 224);; */
@@ -14,6 +15,7 @@ main{
     border-radius: 30px;
     display: flex;
     flex-direction: column;
+    filter: drop-shadow(rgb(61, 61, 102) 15px 15px 15px);
 }
 .upper_window{
     display: flex;
@@ -22,44 +24,59 @@ main{
 }
 
 .online_user_div{
-    background-color: rgb(185, 185, 229);
+    background-color: rgb(147, 147, 247);
     width: 15vw;
     border-radius: 20px 0 0 0;
-    border-right: 5px solid white;
+    border-right: 2px solid white;
 
 }
 
 #online_user_list{
     list-style: none;
     line-height: 30px;
-    color: black;
+    color: rgb(21, 21, 83);
     
 }
 
 
 .chat_window{
-    background-color: rgb(66, 66, 233);
+    background-color: rgb(178, 178, 241);
     width: 80vw;
     padding-left: 50px;
     font-size: large;
-    border-radius: 0 20px 0 0 ;
+    border-radius: 0 20px 0 0;
+    color: rgb(5, 5, 22);
 }
 
 .chat_send{
     justify-self: center;
     align-content: center;
     height: 10vh;
-    background-color: rgb(107, 107, 177);
+    background-color: rgb(75, 75, 148);
     border-radius: 0 0 20px 20px ;
+    border-top: 2px solid white;
 }
 
 #send{
     justify-self: center;
+    
 }
 
 #send input{
     width: 40vw;
     height: 5vh;
+    
+}
+
+#send input:hover{
+    width: 50vw;
+    height: 6vh;
+    border: 1px solid rgb(21, 21, 83);
+}
+
+#send input:focus{
+   width: 50vw;
+   height: 6vh;
 }
 
 #send button{
@@ -67,9 +84,14 @@ main{
     height: 7vh;
     border: none;
     border-radius: 10px;
-    background-color: rgb(36, 36, 114);
+    background-color: rgb(21, 21, 83);
     color: white;
     font-weight: bold;
     letter-spacing: 1px;
 }
 
+#chat_send:hover{
+    cursor: pointer;
+    background-color: rgb(5, 5, 22);
+    font-size: medium;
+}
