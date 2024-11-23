@@ -21,6 +21,16 @@ login_form.addEventListener('submit',onLogin);
 
 
 
+function ShowSignup(){
+    document.getElementById('sign_up_div').hidden=false;
+    document.getElementById('login_div').hidden=true;
+}
+
+function ShowLogin(){
+    document.getElementById('login_div').hidden=false;
+    document.getElementById('sign_up_div').hidden=true;
+}
+
 
 async function onSignUp(e) {
 
@@ -85,6 +95,8 @@ async function onLogin(e) {
             const result = await axios.post("http://localhost:3000/login", User);
 
             alert(result.data.message);
+
+            window.location.href='../chat/chat.html';
 
             localStorage.setItem('token',result.data.token);
 
