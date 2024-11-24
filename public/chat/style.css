@@ -69,26 +69,26 @@ main{
     border-top: 2px solid white;
 }
 
-#send{
+#send_message{
     justify-self: center;
 }
 
-#send input{
+#send_message input{
     width: 40vw;
     height: 6vh;    
 }
 
-#send input:hover{
+#send_message input:hover{
     width: 50vw;
     border: 1px solid rgb(21, 21, 83);
 }
 
-#send input:focus{
+#send_message input:focus{
    width: 50vw;
    height: 6vh;
 }
 
-#send button{
+#send_message button{
     width: 7vw;
     height: 7vh;
     border: none;
@@ -103,4 +103,9 @@ main{
     cursor: pointer;
     background-color: rgb(5, 5, 22);
     letter-spacing: 0;
+}
+
+form #chat_error{
+    color: rgb(46, 1, 1);
+    font-weight: bold;
 }

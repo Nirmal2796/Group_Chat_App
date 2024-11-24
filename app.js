@@ -17,8 +17,10 @@ const sequelize=require('./util/database');
 
 
 const User=require('./models/user');
+const Chat=require('./models/chat');
 
 const userRouter=require('./routes/user');
+const chatRouter=require('./routes/chat');
 
 
 const accessLogStream=fs.createWriteStream(path.join(__dirname, 'access.log'),{flags:'a'})
@@ -38,6 +40,10 @@ app.use(bodyParser.json({extended:false}));
 
 
 app.use(userRouter);
+app.use(chatRouter);
+
+User.hasMany(Chat); //one to many
+Chat.belongsTo(User); //one to one
 
 sequelize
 .sync()
