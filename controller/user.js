@@ -22,7 +22,7 @@ const postSignupUser = async (req, res) => {
 
         
         if (user.length>0) {
-            res.status(403).json('User Already Exists...Please Log In');
+            res.status(403).json('User Already Exists...');
         }
         else {
 

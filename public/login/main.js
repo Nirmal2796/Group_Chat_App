@@ -1,34 +1,34 @@
-sign_up_user_name=document.getElementById('sign_up_name');
-sign_up_user_email=document.getElementById('sign_up_email');
-sign_up_user_phone=document.getElementById('sign_up_phone');
-sign_up_user_password=document.getElementById('sign_up_password');
-sign_up_msg=document.getElementById('sign_up_msg');
-sign_up_error=document.getElementById('sign_up_error');
+sign_up_user_name = document.getElementById('sign_up_name');
+sign_up_user_email = document.getElementById('sign_up_email');
+sign_up_user_phone = document.getElementById('sign_up_phone');
+sign_up_user_password = document.getElementById('sign_up_password');
+sign_up_msg = document.getElementById('sign_up_msg');
+sign_up_error = document.getElementById('sign_up_error');
 
-login_user_email=document.getElementById('login_email');
-login_user_password=document.getElementById('login_password');
-login_msg=document.getElementById('login_msg');
-login_error=document.getElementById('login_error');
+login_user_email = document.getElementById('login_email');
+login_user_password = document.getElementById('login_password');
+login_msg = document.getElementById('login_msg');
+login_error = document.getElementById('login_error');
 
-sign_up_form=document.getElementById('sign_up_form');
-login_form=document.getElementById('login_form');
+sign_up_form = document.getElementById('sign_up_form');
+login_form = document.getElementById('login_form');
 
-sign_up_submit=document.getElementById('sign_up_submit');
-login_submit=document.getElementById('login_submit');
+sign_up_submit = document.getElementById('sign_up_submit');
+login_submit = document.getElementById('login_submit');
 
-sign_up_form.addEventListener('submit',onSignUp);
-login_form.addEventListener('submit',onLogin);
+sign_up_form.addEventListener('submit', onSignUp);
+login_form.addEventListener('submit', onLogin);
 
 
 
-function ShowSignup(){
-    document.getElementById('sign_up_div').hidden=false;
-    document.getElementById('login_div').hidden=true;
+function ShowSignup() {
+    document.getElementById('sign_up_div').hidden = false;
+    document.getElementById('login_div').hidden = true;
 }
 
-function ShowLogin(){
-    document.getElementById('login_div').hidden=false;
-    document.getElementById('sign_up_div').hidden=true;
+function ShowLogin() {
+    document.getElementById('login_div').hidden = false;
+    document.getElementById('sign_up_div').hidden = true;
 }
 
 
@@ -36,7 +36,7 @@ async function onSignUp(e) {
 
     e.preventDefault();
 
-    if (sign_up_user_name.value == '' || sign_up_user_email.value == '' || sign_up_user_phone.value=='' || sign_up_user_password == '') {
+    if (sign_up_user_name.value == '' || sign_up_user_email.value == '' || sign_up_user_phone.value == '' || sign_up_user_password == '') {
         sign_up_msg.innerHTML = '<b>Please enter all fields</b>';
 
         setTimeout(() => {
@@ -47,11 +47,11 @@ async function onSignUp(e) {
 
         try {
 
-            User={
-                name:sign_up_user_name.value,
-                email:sign_up_user_email.value,
+            User = {
+                name: sign_up_user_name.value,
+                email: sign_up_user_email.value,
                 phone: sign_up_user_phone.value,
-                password:sign_up_user_password.value
+                password: sign_up_user_password.value
             };
 
             const result = await axios.post("http://localhost:3000/signup", User);
@@ -61,20 +61,25 @@ async function onSignUp(e) {
             sign_up_form.reset();
         }
         catch (err) {
+            
             sign_up_form.reset();
-            // sign_up_error.innerHTML = `Error: ${err.response.data}`;
-            alert(err.response.data);
+
+            sign_up_msg.innerHTML = `${err.response.data}`;
+            setTimeout(() => {
+                sign_up_msg.removeChild(sign_up_msg.firstChild);
+            }, 2000);
+
             console.log(err);
         }
     }
-    
+
 }
 
 async function onLogin(e) {
-    
+
     e.preventDefault();
 
-    if (login_user_email.value == '' ||  login_user_password == '') {
+    if (login_user_email.value == '' || login_user_password == '') {
         login_msg.innerHTML = '<b>Please enter all fields</b>';
 
         setTimeout(() => {
@@ -85,28 +90,28 @@ async function onLogin(e) {
 
         try {
 
-            User={
-                name:sign_up_user_name.value,
-                email:login_user_email.value,
+            User = {
+                name: sign_up_user_name.value,
+                email: login_user_email.value,
                 phone: sign_up_user_phone.value,
-                password:login_user_password.value
+                password: login_user_password.value
             };
 
             const result = await axios.post("http://localhost:3000/login", User);
 
             alert(result.data.message);
 
-            window.location.href='../chat/chat.html';
+            window.location.href = '../chat/chat.html';
 
-            localStorage.setItem('token',result.data.token);
+            localStorage.setItem('token', result.data.token);
 
             login_form.reset();
         }
         catch (err) {
             login_form.reset();
-            login_error.innerHTML = `Error: ${err.response.data.message}`;
+            login_msg.innerHTML = `${err.response.data.message}`;
             setTimeout(() => {
-                login_error.removeChild(login_error.firstChild);
+                login_msg.removeChild(login_msg.firstChild);
             }, 2000);
 
             console.log(err);
