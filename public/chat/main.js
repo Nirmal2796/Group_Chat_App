@@ -1,16 +1,18 @@
-const online_user_list=document.getElementById('online_user_list');
-const chat_box=document.getElementById('chat_box');
-const send_message_form=document.getElementById('send_message');
-const chat_message=document.getElementById('chat_message');
-const chat_error=document.getElementById('chat_error');
+const online_user_list = document.getElementById('online_user_list');
+const chat_box = document.getElementById('chat_box');
+const send_message_form = document.getElementById('send_message');
+const chat_message = document.getElementById('chat_message');
+const chat_error = document.getElementById('chat_error');
 
 
-send_message_form.addEventListener('submit',onSendMessage);
+send_message_form.addEventListener('submit', onSendMessage);
 
 document.addEventListener('DOMContentLoaded', DomLoad);
 
 //token
 const token = localStorage.getItem('token');
+
+
 
 //DOMLOAD
 async function DomLoad() {
@@ -20,14 +22,13 @@ async function DomLoad() {
 
         const messages = res.data.messages;
 
-        for(m in messages){
+        for (m in messages) {
 
             showMessages(messages[m]);
 
         }
-        
 
-        console.log(messages);
+        // console.log(messages);
 
     }
     catch (err) {
@@ -36,14 +37,34 @@ async function DomLoad() {
 
 }
 
+
+//Get New Messages
+setInterval(async () => {
+    const res = await axios.get(`http://localhost:3000/get-messages`, { headers: { 'Auth': token } });
+
+    const messages = res.data.messages;
+
+    chat_box.innerHTML = '';
+
+    for (m in messages) {
+
+        showMessages(messages[m]);
+
+    }
+
+}, 1000);
+
+
+
+
 //SEND MESSAGE
 async function onSendMessage(e) {
-    
+
     e.preventDefault();
 
-    console.log(chat_message.value);
+    // console.log(chat_message.value);
 
-    if(chat_message.value ==''){
+    if (chat_message.value == '') {
 
         chat_error.innerHTML = 'Please enter a message';
 
@@ -51,33 +72,34 @@ async function onSendMessage(e) {
             chat_error.removeChild(chat_error.firstChild);
         }, 2000);
     }
-    else{
+    else {
 
         try {
-                message={
-                    message:chat_message.value
-                }
-
-                let response = await axios.post(`http://localhost:3000/send-message`, message, { headers: { 'Auth': token } });
-                
-                console.log(response);
-
-                showMessages(response.data.message);
-    
+            message = {
+                message: chat_message.value
             }
-            catch (err) {
-                console.log(err);
-            }
-    
-            send_message_form.reset();
+
+            let response = await axios.post(`http://localhost:3000/send-message`, message, { headers: { 'Auth': token } });
+
+            // console.log(response);
+
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+        send_message_form.reset();
     }
 
 }
 
-function showMessages(message){
-    
-    console.log(message);
-    const newMessage=`<p>${message.message}</p>`;
+
+//show messages
+function showMessages(message) {
+
+    // console.log(message);
+    const newMessage = `<p>${message.message}</p>`;
     // console.log(newMessage);
-    chat_box.innerHTML+=newMessage;
+    chat_box.innerHTML += newMessage;
 }
