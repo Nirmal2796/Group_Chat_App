@@ -1,11 +1,12 @@
 const User = require('../models/user');
+const Chat = require('../models/chat');
 const sequelize = require('../util/database');
 
 
 exports.getMessage = async (req, res) => {
     try {
 
-        const messages=await req.user.getChats();
+        const messages=await Chat.findAll();
 
         res.status(200).json({messages:messages});
     }

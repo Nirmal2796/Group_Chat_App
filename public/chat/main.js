@@ -1,5 +1,5 @@
-const online_users=document.getElementById('online_user_list');
-const chat_box=document.getElementsByClassName('chat_box');
+const online_user_list=document.getElementById('online_user_list');
+const chat_box=document.getElementById('chat_box');
 const send_message_form=document.getElementById('send_message');
 const chat_message=document.getElementById('chat_message');
 const chat_error=document.getElementById('chat_error');
@@ -19,6 +19,13 @@ async function DomLoad() {
         const res = await axios.get(`http://localhost:3000/get-messages`, { headers: { 'Auth': token } });
 
         const messages = res.data.messages;
+
+        for(m in messages){
+
+            showMessages(messages[m]);
+
+        }
+        
 
         console.log(messages);
 
@@ -54,6 +61,8 @@ async function onSendMessage(e) {
                 let response = await axios.post(`http://localhost:3000/send-message`, message, { headers: { 'Auth': token } });
                 
                 console.log(response);
+
+                showMessages(response.data.message);
     
             }
             catch (err) {
@@ -63,4 +72,12 @@ async function onSendMessage(e) {
             send_message_form.reset();
     }
 
+}
+
+function showMessages(message){
+    
+    console.log(message);
+    const newMessage=`<p>${message.message}</p>`;
+    // console.log(newMessage);
+    chat_box.innerHTML+=newMessage;
 }
