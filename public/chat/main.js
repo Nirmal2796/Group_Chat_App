@@ -18,17 +18,27 @@ const token = localStorage.getItem('token');
 async function DomLoad() {
     try {
 
-        const res = await axios.get(`http://localhost:3000/get-messages`, { headers: { 'Auth': token } });
+        let LastMessageID = localStorage.getItem('LastMessageIDLS');
 
-        const messages = res.data.messages;
-
-        for (m in messages) {
-
-            showMessages(messages[m]);
-
+        if (LastMessageID == undefined) {
+            LastMessageID = '-1';
         }
 
-        // console.log(messages);
+        // const res = await axios.get(`http://localhost:3000/get-messages?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
+
+        // const messages = res.data.messages;
+
+        setInterval(async () => {
+
+            const res = await axios.get(`http://localhost:3000/get-messages?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
+
+            const messages = res.data.messages;
+
+            AddToLocalStorage(messages);
+
+            LastMessageID = localStorage.getItem('LastMessageIDLS');
+
+        }, 1000);
 
     }
     catch (err) {
@@ -38,21 +48,38 @@ async function DomLoad() {
 }
 
 
-//Get New Messages
-setInterval(async () => {
-    const res = await axios.get(`http://localhost:3000/get-messages`, { headers: { 'Auth': token } });
+//ADD TO LOCAL STORAGE
+function AddToLocalStorage(messages) {
 
-    const messages = res.data.messages;
+    let OldMessages = JSON.parse(localStorage.getItem('OldMessages'));
 
-    chat_box.innerHTML = '';
+    if (OldMessages == null && messages.length != 0) {
 
-    for (m in messages) {
+        localStorage.setItem('OldMessages', JSON.stringify(messages));
+        localStorage.setItem('LastMessageIDLS', messages[messages.length - 1].id);
+        OldMessages = JSON.parse(localStorage.getItem('OldMessages'));
 
-        showMessages(messages[m]);
+    }
+    else if (OldMessages.length <= 10 && messages.length != 0) {
+
+        const res = OldMessages.splice(0, messages.length);
+        for (i in messages) {
+            OldMessages.push(messages[i]);
+        }
+
+        localStorage.setItem('OldMessages', JSON.stringify(OldMessages));
+        localStorage.setItem('LastMessageIDLS', OldMessages[OldMessages.length - 1].id);
 
     }
 
-}, 1000);
+    chat_box.innerHTML = '';
+
+    for (m in OldMessages) {
+
+        showMessages(OldMessages[m]);
+
+    }
+}
 
 
 
@@ -81,9 +108,6 @@ async function onSendMessage(e) {
 
             let response = await axios.post(`http://localhost:3000/send-message`, message, { headers: { 'Auth': token } });
 
-            // console.log(response);
-
-
         }
         catch (err) {
             console.log(err);
@@ -95,11 +119,8 @@ async function onSendMessage(e) {
 }
 
 
-//show messages
+//SHOW MESSAGES ON SCREEN
 function showMessages(message) {
-
-    // console.log(message);
-    const newMessage = `<p>${message.message}</p>`;
-    // console.log(newMessage);
+    const newMessage = `<p>${message.user.name} : ${message.message}</p>`;
     chat_box.innerHTML += newMessage;
 }
