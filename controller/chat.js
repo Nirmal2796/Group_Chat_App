@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const Chat = require('../models/chat');
+const Group = require('../models/group')
 const sequelize = require('../util/database');
 const { where, NUMBER, Op } = require('sequelize');
 
@@ -12,15 +13,33 @@ exports.getMessage = async (req, res) => {
         // console.log('LastMessageID', LastMessageID)
 
 
-        const messages = await Chat.findAll({
+        // const messages = await Chat.findAll({
+        //     attributes: ['id', 'message'],
+        //     include: [{ model: User, attributes: ['name'] }],
+        //     where: {
+        //         'id': { [Op.gt]: LastMessageID }
+        //     },
+        //     limit: 10
+        // }
+        // );
+
+        // const groups=await Group.findAll({where:{userId: req.user.id}});
+
+        const m=await  Chat.findAll({
             attributes: ['id', 'message'],
             include: [{ model: User, attributes: ['name'] }],
+            include: [{ model: Group, attributes: ['name'] }],
             where: {
                 'id': { [Op.gt]: LastMessageID }
+            },
+            where:{
+                userId: req.user.id
             },
             limit: 10
         }
         );
+
+       
 
         res.status(200).json({ messages: messages });
     }

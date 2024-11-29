@@ -3,11 +3,13 @@ const chat_box = document.getElementById('chat_box');
 const send_message_form = document.getElementById('send_message');
 const chat_message = document.getElementById('chat_message');
 const chat_error = document.getElementById('chat_error');
+const create_group = document.getElementById('create_group');
 
 
 send_message_form.addEventListener('submit', onSendMessage);
 
 document.addEventListener('DOMContentLoaded', DomLoad);
+
 
 //token
 const token = localStorage.getItem('token');
@@ -123,4 +125,33 @@ async function onSendMessage(e) {
 function showMessages(message) {
     const newMessage = `<p>${message.user.name} : ${message.message}</p>`;
     chat_box.innerHTML += newMessage;
+}
+
+
+//CREATE GROUP
+
+async function createGroup(){
+    document.getElementById('plus_icon').hidden=true;
+    document.getElementById('group_form_div').hidden=false;
+
+    const group_name=document.getElementById('group_name').value;
+
+    group={
+        group_name:group_name
+    }
+
+    const res=await axios.post('http://localhost:3000/create-group',group, { headers: { 'Auth': token } });
+
+}
+
+
+async function getGroup(){
+
+    const res=await axios.post('http://localhost:3000/get-group',{ headers: { 'Auth': token } });
+
+    for(group in res.data.groups){
+
+        online_user_list.innerHTML+=`<li> ${m.name} </li>`;
+    }
+
 }

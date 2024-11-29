@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <div>
@@ -18,13 +19,27 @@
                     
                     
                 </ul>
+
+                <span id="plus_icon">
+                    <button id="create_group" onclick='createGroup()'><i class="fa">&#xf067;</i></i></button>
+                </span>
+
+                <div id="group_form_div" hidden>
+                    <form action="" id="group_form">
+                        <input type="text" id="group_name" required>
+                        <button type="submit" id="create">Create</button>
+                    </form>
+                </div>
             </div>
+
     
             <div class="chat_window">
                 <div class="chat_read">
                     <div id="chat_box">
                     </div>
                 </div>
+
+                
             </div>
         </div>
 
