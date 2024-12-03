@@ -19,9 +19,11 @@ const sequelize = require('./util/database');
 const User = require('./models/user');
 const Chat = require('./models/chat');
 const Group = require('./models/group');
+const User_Group=require('./models/user_group');
 
 const userRouter = require('./routes/user');
 const chatRouter = require('./routes/chat');
+const groupRouter=require('./routes/group');
 
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
@@ -42,12 +44,13 @@ app.use(bodyParser.json({ extended: false }));
 
 app.use(userRouter);
 app.use(chatRouter);
+app.use(groupRouter);
 
 User.hasMany(Chat); //one to many
 Chat.belongsTo(User); //one to one
 
-User.belongsToMany(Group, { through: 'User_Group' });
-Group.belongsToMany(User, { through: 'User_Group' });
+User.belongsToMany(Group, { through: User_Group });
+Group.belongsToMany(User, { through: User_Group });
 
 Group.hasMany(Chat);
 Chat.belongsTo(Group);

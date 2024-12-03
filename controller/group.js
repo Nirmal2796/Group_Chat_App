@@ -1,6 +1,8 @@
 
 const Group=require('../models/group');
-
+const User = require('../models/user');
+const User_Group=require('../models/user_group');
+const sequelize = require('../util/database');
 
 exports.createGroup=async (req,res)=>{
     const t=await sequelize.transaction();
@@ -8,9 +10,18 @@ exports.createGroup=async (req,res)=>{
 
         const group_name=req.body.group_name;
         
-        const group = await req.user.createGroup({
-            name: group_name
-        }, { transaction: t });
+        // console.log(group_name);
+
+        const group = await Group.create({
+            name:group_name,
+            admin:req.user.id
+        },{transaction:t});
+
+        const user_group=User_Group.create({
+            groupId:group.id,
+            userId:req.user.id,
+            role:'admin'
+        },{transaction:t})
 
         await t.commit();
 
@@ -28,12 +39,54 @@ exports.createGroup=async (req,res)=>{
 exports.getGroups = async (req, res) => {
     try {
 
-        const groups=await Group.findAll({where:{userId: req.user.id}});
+        // console.log(req.user.id);
+        const groups=await User.findByPk(req.user.id,{
+            include:{
+                model:Group,
+                attributes:['id','name']
+            }
+        })
 
-        res.status(200).json({ groups: groups });
+        // console.log(groups.groups);
+
+        res.status(200).json({ groups: groups.groups});
     }
     catch (err) {
         console.log(err);
         res.status(500).json({ success: false });
     }
+}
+
+
+exports.joinGroup=async (req,res)=>{
+    
+    const t=await sequelize.transaction();
+    try{
+
+        const gid=req.params.gid;
+
+        // const group = await Group.findOne({where:{id}})    
+
+        const group = await Group.findByPk(gid);
+
+        if(!group){
+            throw new Error('Group does not Exist');
+        }
+
+        const user_group=await User_Group.create({
+            groupId:group.id,
+            userId:req.user.id,
+            role:'member'
+        },{transaction:t});
+
+        await t.commit();
+
+        res.status(200).json({ user_group: user_group });
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false });
+    }
+
 }

@@ -9,8 +9,9 @@ const userAuthentication=require('../middleware/userAuthentication');
 
 router.post('/create-group',userAuthentication.authentication,groupController.createGroup);
 
-router.get('/get-groups',userAuthentication.authentication,groupController);
+router.get('/get-groups',userAuthentication.authentication,groupController.getGroups);  
 
+router.get('/join-group/:gid',userAuthentication.authentication,groupController.joinGroup);
 
 
 module.exports=router;

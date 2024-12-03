@@ -10,36 +10,45 @@ exports.getMessage = async (req, res) => {
 
         const LastMessageID = JSON.parse(req.query.LastMessageID);
 
-        // console.log('LastMessageID', LastMessageID)
+        const gid = req.params.gid;
 
 
-        // const messages = await Chat.findAll({
-        //     attributes: ['id', 'message'],
-        //     include: [{ model: User, attributes: ['name'] }],
-        //     where: {
-        //         'id': { [Op.gt]: LastMessageID }
-        //     },
-        //     limit: 10
-        // }
-        // );
-
-        // const groups=await Group.findAll({where:{userId: req.user.id}});
-
-        const m=await  Chat.findAll({
+        const messages = await Chat.findAll({
             attributes: ['id', 'message'],
-            include: [{ model: User, attributes: ['name'] }],
-            include: [{ model: Group, attributes: ['name'] }],
+            include: [{ model: Group, attributes: ['id'] }],
             where: {
-                'id': { [Op.gt]: LastMessageID }
-            },
-            where:{
-                userId: req.user.id
+                [Op.and]: [
+                    {
+                        'groupId': gid
+                    },
+                    {
+                        'id': { [Op.gt]: LastMessageID }
+                    }
+                ]
             },
             limit: 10
         }
         );
 
-       
+        console.log(messages);
+        // const groups=await Group.findAll({where:{userId: req.user.id}});
+
+
+        // const groups=await Group.findAll({
+        //     include:[{
+        //         model:User,
+        //         through:{
+        //             attributes:[],
+        //             where:{userId:req.user.id}
+        //         }
+        //     }]
+        // });
+
+
+        // const messages=await Chat.findAll({
+
+        // })
+
 
         res.status(200).json({ messages: messages });
     }
@@ -58,7 +67,8 @@ exports.sendMessage = async (req, res) => {
         const message_body = req.body.message;
 
         const message = await req.user.createChat({
-            message: message_body
+            message: message_body,
+            groupId: req.params.gid
         }, { transaction: t });
 
         await t.commit();

@@ -7,8 +7,8 @@ const chatController=require('../controller/chat');
 const userAuthentication=require('../middleware/userAuthentication');
 
 
-router.post('/send-message',userAuthentication.authentication,chatController.sendMessage);
+router.post('/send-message/:gid',userAuthentication.authentication,chatController.sendMessage);
 
-router.get('/get-messages',userAuthentication.authentication,chatController.getMessage);
+router.get('/get-messages/:gid',userAuthentication.authentication,chatController.getMessage);
 
 module.exports=router;
