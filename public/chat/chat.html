@@ -14,32 +14,34 @@
     <main>
         <div class="upper_window">
 
-            <div class="online_user_div">
-                <ul id="online_user_list">
+            <div class="group_list_div">
+                <ul id="group_list">
                     
                     
                 </ul>
 
                 <span id="plus_icon">
-                    <button id="create_group" onclick='createGroup()'><i class="fa">&#xf067;</i></i></button>
+                    <button id="create_group" onclick='showCreateGroup()'><i class="fa">&#xf067;</i></i></button>
                 </span>
 
                 <div id="group_form_div" hidden>
                     <form action="" id="group_form">
                         <input type="text" id="group_name" required>
-                        <button type="submit" id="create">Create</button>
+                        <button type="submit" id="create">CREATE</button>
                     </form>
                 </div>
             </div>
 
     
             <div class="chat_window">
+                <div id="group_name_bar">
+                    <h3 id="group_name_text"></h3>
+                    <button><i class="fa fa-ellipsis-v"></i></button>
+                </div>
                 <div class="chat_read">
                     <div id="chat_box">
                     </div>
                 </div>
-
-                
             </div>
         </div>
 
