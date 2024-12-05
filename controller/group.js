@@ -17,7 +17,8 @@ exports.createGroup=async (req,res)=>{
             admin:req.user.id
         },{transaction:t});
 
-        const user_group=User_Group.create({
+
+        const user_group = await User_Group.create({
             groupId:group.id,
             userId:req.user.id,
             role:'admin'
@@ -39,13 +40,15 @@ exports.createGroup=async (req,res)=>{
 exports.getGroups = async (req, res) => {
     try {
 
-        // console.log(req.user.id);
+        console.log(req.user.id);
         const groups=await User.findByPk(req.user.id,{
             include:{
                 model:Group,
                 attributes:['id','name']
             }
         })
+
+    
 
         // console.log(groups.groups);
 

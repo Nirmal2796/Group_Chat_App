@@ -15,7 +15,10 @@ exports.getMessage = async (req, res) => {
 
         const messages = await Chat.findAll({
             attributes: ['id', 'message'],
-            include: [{ model: Group, attributes: ['id'] }],
+            include: [{ model: Group, attributes: ['id'] },{
+                model:User, attributes:['name']
+            }
+        ],
             where: {
                 [Op.and]: [
                     {
@@ -26,7 +29,7 @@ exports.getMessage = async (req, res) => {
                     }
                 ]
             },
-            limit: 10
+            limit: 10,
         }
         );
 
@@ -65,6 +68,8 @@ exports.sendMessage = async (req, res) => {
 
     try {
         const message_body = req.body.message;
+
+        console.log('GID',req.params.gid)
 
         const message = await req.user.createChat({
             message: message_body,
