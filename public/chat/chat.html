@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
+
 <body>
     <div>
         <h1>Chat App</h1>
@@ -16,8 +18,8 @@
 
             <div class="group_list_div">
                 <ul id="group_list">
-                    
-                    
+
+
                 </ul>
 
                 <span id="plus_icon">
@@ -32,11 +34,20 @@
                 </div>
             </div>
 
-    
+
             <div class="chat_window">
                 <div id="group_name_bar">
                     <h3 id="group_name_text"></h3>
-                    <button><i class="fa fa-ellipsis-v"></i></button>
+                    <button id="menu_btn" name="menu"onclick='showMenu(this)'><i class="fa fa-ellipsis-v"></i></button>
+                    <button id="close_btn" name="close" onclick='showMenu(this)' hidden><i class="fa fa-times"></i></button>
+                </div>
+                <div id="menu" hidden>
+                    <ul>
+                        <li>Copy Link</li>
+                        <li>Share Link</li>
+                        <li>Invite via email</li>
+                    </ul>
+
                 </div>
                 <div class="chat_read">
                     <div id="chat_box">
@@ -56,6 +67,8 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script src="menu_close.js"></script>
     <script src="main.js"></script>
 </body>
+
 </html>

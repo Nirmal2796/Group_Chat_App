@@ -77,7 +77,7 @@ main {
     font-size: large;
 }
 
-#group_list li {}
+/* #group_list li {} */
 
 #group_list li button {
     background-color: rgb(133, 133, 212);
@@ -98,6 +98,7 @@ main {
     font-size: large;
     border-radius: 0 20px 0 0;
     color: rgb(5, 5, 22);
+    position: relative;
 }
 
 .chat_read {
@@ -111,6 +112,7 @@ main {
     padding: 5px;
     color: #fff;
     border-radius: 0 20px 0 0;
+    height: 8vh;
 }
 
 #group_name_bar h3 {
@@ -120,15 +122,54 @@ main {
 
 #group_name_bar button {
     font-size: large;
-    background: rgb(61, 61, 153);
+    background: none;
     border: none;
     color: #fff;
-    padding-inline-end: 20px;
+    padding-right: 20px;
 }
 
 #group_name_bar button i {
     font-size: larger;
     margin: 2px;
+    cursor: pointer;
+}
+
+
+
+#menu{
+    background: #fff;
+    color: rgb(61, 61, 153);
+    width: 20vw;
+    padding: 10px;
+    /* border-radius: 0 20px 0 0; */
+    position: absolute;
+    /* top: -1px; */
+    right: 0;
+}
+
+#menu ul{
+    list-style: none;
+    line-height: 40px;
+    letter-spacing: 1px;
+    margin-left: 10px;
+}
+
+#menu ul li{
+    cursor: pointer;
+}
+
+#menu ul li:hover{
+    text-decoration: underline;
+    font-weight: bold;
+    letter-spacing: 0;
+}
+
+#menu button{
+    font-size: large;
+    background: none;
+    border: none;
+    color: rgb(61, 61, 153);
+    cursor: pointer;
 }
 
 #group_form_div {
