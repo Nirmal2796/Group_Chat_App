@@ -80,41 +80,33 @@ async function getMessage(gid,glink) {
 //ADD TO LOCAL STORAGE
 function AddToLocalStorage(messages) {
 
-    console.log(messages);
+    // console.log(messages);
     // console.log(messages.length);
 
-    let OldMessages = JSON.parse(localStorage.getItem('OldMessages'));
-    console.log(OldMessages);
+    // Retrieve or initialize
+    let OldMessages = JSON.parse(localStorage.getItem('OldMessages')) || [];
+    // console.log(OldMessages);
 
-    if (OldMessages == null && messages.length !=0 ) {
-        console.log('in 1st if')
-        localStorage.setItem('OldMessages', JSON.stringify(messages));
-        localStorage.setItem('LastMessageIDLS', messages[messages.length - 1].id);
-    }
-    else if (messages.length != 0  && messages.length < 10) {
-        console.log('in 2 if')
-        // OldMessages=JSON.parse(OldMessages);
-        const res = OldMessages.splice(0, messages.length);
-        for (i in messages) {
-            OldMessages.push(messages[i]);
+    if(messages.length > 0){
+        if(OldMessages.length + messages.length <=10){
+             // If combined messages are less than or equal to 10
+            OldMessages=[...OldMessages,...messages];
         }
-        localStorage.setItem('OldMessages', JSON.stringify(OldMessages));
-        localStorage.setItem('LastMessageIDLS', OldMessages[OldMessages.length - 1].id);
-
+        else if(messages.length >=10){
+            // If exactly 10 new messages are received
+            OldMessages = messages;
+        }
+        else{
+            // If the combined messages exceed 10, maintain the latest 10
+            const excess = OldMessages.length + messages.length - 10;
+            OldMessages = [...OldMessages.slice(excess), ...messages];
+        }
+         // Save to localStorage
+         localStorage.setItem("OldMessages", JSON.stringify(OldMessages));
+         localStorage.setItem("LastMessageIDLS", OldMessages[OldMessages.length - 1].id);
     }
-    else if (messages.length == 10 ) {
-        // console.log(OldMessages);
-        console.log('in 3 if')
-        // console.log(messages);
-        localStorage.setItem('OldMessages', JSON.stringify(messages));
-        localStorage.setItem('LastMessageIDLS', messages[messages.length - 1].id);
-        // OldMessages = JSON.parse(localStorage.getItem('OldMessages'));
 
-    }
-
-
-    if (OldMessages != null) {
-        // console.log('Oldmessages',OldMessages);
+   
 
         chat_box.innerHTML = '';
 
@@ -123,8 +115,34 @@ function AddToLocalStorage(messages) {
             showMessages(OldMessages[m]);
 
         }
-    }
+    
 }
+
+/*
+1)Explanation of Logic
+
+    1.Combine Old and New Messages:
+        -If the combined length is less than or equal to 10, directly append.
+
+    2.Handle 10 New Messages:
+        -Replace old messages if exactly 10 new messages are received.
+
+    3.Trim Excess Messages:
+        -Ensure the total number of stored messages doesn’t exceed 10.
+
+    4.Update Local Storage:
+        -Save the updated message array and the ID of the last message.
+
+    5.Render Messages:
+        -Clear the chat box and display the updated messages.
+
+
+2)Testing Suggestions:
+    1.Test with various message lengths:
+        -messages.length = 0
+        -messages.length < 10
+        -messages.length = 10
+*/
 
 
 
