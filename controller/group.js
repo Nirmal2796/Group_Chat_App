@@ -3,6 +3,7 @@ const Group=require('../models/group');
 const User = require('../models/user');
 const User_Group=require('../models/user_group');
 const sequelize = require('../util/database');
+const { v4: uuidv4 } = require('uuid'); 
 
 exports.createGroup=async (req,res)=>{
     const t=await sequelize.transaction();
@@ -11,10 +12,12 @@ exports.createGroup=async (req,res)=>{
         const group_name=req.body.group_name;
         
         // console.log(group_name);
+        const uid = uuidv4();
 
         const group = await Group.create({
             name:group_name,
-            admin:req.user.id
+            admin:req.user.id,
+            link:uid
         },{transaction:t});
 
 
@@ -36,7 +39,6 @@ exports.createGroup=async (req,res)=>{
 }
 
 
-
 exports.getGroups = async (req, res) => {
     try {
 
@@ -44,7 +46,7 @@ exports.getGroups = async (req, res) => {
         const groups=await User.findByPk(req.user.id,{
             include:{
                 model:Group,
-                attributes:['id','name']
+                attributes:['id','name','link']
             }
         })
 
@@ -66,11 +68,11 @@ exports.joinGroup=async (req,res)=>{
     const t=await sequelize.transaction();
     try{
 
-        const gid=req.params.gid;
+        const glink=req.params.glink;
 
         // const group = await Group.findOne({where:{id}})    
 
-        const group = await Group.findByPk(gid);
+        const group = await Group.findOne(glink);
 
         if(!group){
             throw new Error('Group does not Exist');

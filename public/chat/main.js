@@ -25,7 +25,7 @@ async function DomLoad() {
 
 
         // getMessage(1);
-        getGroup(4);
+        getGroup();
 
     }
     catch (err) {
@@ -34,11 +34,14 @@ async function DomLoad() {
 
 }
 
-async function getMessage(gid) {
+
+//GET MESSAGES
+async function getMessage(gid,glink) {
 
     let LastMessageID = localStorage.getItem('LastMessageIDLS');
 
     localStorage.setItem('gid', gid);
+    localStorage.setItem('glink',`http://localhost:3000/join-group/${glink}`);
 
     if (LastMessageID == undefined) {
         LastMessageID = '-1';
@@ -78,16 +81,17 @@ async function getMessage(gid) {
 function AddToLocalStorage(messages) {
 
     console.log(messages);
-    console.log(messages.length);
+    // console.log(messages.length);
 
     let OldMessages = JSON.parse(localStorage.getItem('OldMessages'));
-    // console.log(OldMessages.length);
-    if (OldMessages == null) {
+    console.log(OldMessages);
+
+    if (OldMessages == null && messages.length !=0 ) {
         console.log('in 1st if')
         localStorage.setItem('OldMessages', JSON.stringify(messages));
         localStorage.setItem('LastMessageIDLS', messages[messages.length - 1].id);
     }
-    else if (messages.length != 0 && messages.length < 10) {
+    else if (messages.length != 0  && messages.length < 10) {
         console.log('in 2 if')
         // OldMessages=JSON.parse(OldMessages);
         const res = OldMessages.splice(0, messages.length);
@@ -101,7 +105,7 @@ function AddToLocalStorage(messages) {
     else if (messages.length == 10 ) {
         // console.log(OldMessages);
         console.log('in 3 if')
-        console.log(messages);
+        // console.log(messages);
         localStorage.setItem('OldMessages', JSON.stringify(messages));
         localStorage.setItem('LastMessageIDLS', messages[messages.length - 1].id);
         // OldMessages = JSON.parse(localStorage.getItem('OldMessages'));
@@ -121,7 +125,6 @@ function AddToLocalStorage(messages) {
         }
     }
 }
-
 
 
 
@@ -152,8 +155,9 @@ async function onSendMessage(e) {
             let response = await axios.post(`http://localhost:3000/send-message/${gid}`, message, { headers: { 'Auth': token } });
 
             console.log(response.data.message);
+            // localStorage.setItem('LastMessageIDLS', response.data.message.id);
             // AddToLocalStorage(response.data.message);
-            showMessages(response.data.message);
+            // showMessages(response.data.message);
         }
         catch (err) {
             console.log(err);
@@ -224,7 +228,7 @@ async function createGroup(e) {
 
 }
 
-//SHOW GROUPs
+//SHOW GROUPS
 async function getGroup() {
     try {
 
@@ -236,8 +240,8 @@ async function getGroup() {
         group_list.innerHTML = '';
 
         for (group in groups) {
-            // console.log(group);
-            group_list.innerHTML += `<li><button id=${groups[group].id} value='${groups[group].name}' onclick='getMessage(${groups[group].id})'>${groups[group].name}</button></li>`;
+            console.log(typeof(groups[group].link));
+            group_list.innerHTML += `<li><button id=${groups[group].id} value='${groups[group].name}' onclick='getMessage(${groups[group].id},"${groups[group].link}")'>${groups[group].name}</button></li>`;
         }
 
         // const classBtn=document.getElementById("4");
@@ -256,4 +260,37 @@ async function joinGroup(params) {
 
     const res = await axios.get(`http://localhost:3000/join-group/${gid}`, { headers: { 'Auth': token } });
 
+}
+
+//COPY LINK
+function copyLink(){
+    const gLink = localStorage.getItem('glink');
+
+    if(gLink){
+        navigator.clipboard.writeText(gLink);
+        console.log("Link copied to clipboard!");
+    }
+    else{
+        console.error("Failed to copy:", err);
+    }
+}
+
+//SHARE LINK
+async function shareLink(){
+    const gLink = localStorage.getItem('glink');
+
+    if (navigator.share) {
+          try {
+            await navigator.share({
+              title: "JOIN GROUP",
+              url: window.location.href,
+            });
+            console.log("Content shared successfully");
+          } catch (err) {
+            console.error("Error sharing:", err);
+          }
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        console.log("Web Share API not supported");
+      }
 }

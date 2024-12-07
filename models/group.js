@@ -16,6 +16,11 @@ const Group=sequelize.define('group',{
     admin:{
         type:Sequelize.INTEGER,
         allowNull:false,
+    },
+    link:{
+        type:Sequelize.STRING,
+        allowNull:false,
+        unique:true
     }
 });
 

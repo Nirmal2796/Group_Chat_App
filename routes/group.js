@@ -11,7 +11,7 @@ router.post('/create-group',userAuthentication.authentication,groupController.cr
 
 router.get('/get-groups',userAuthentication.authentication,groupController.getGroups);  
 
-router.get('/join-group/:gid',userAuthentication.authentication,groupController.joinGroup);
+router.get('/join-group/:glink',userAuthentication.authentication,groupController.joinGroup);
 
 
 module.exports=router;

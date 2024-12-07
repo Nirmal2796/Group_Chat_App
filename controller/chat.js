@@ -33,7 +33,7 @@ exports.getMessage = async (req, res) => {
         }
         );
 
-        console.log(messages);
+        // console.log(messages);
         // const groups=await Group.findAll({where:{userId: req.user.id}});
 
 
@@ -69,16 +69,18 @@ exports.sendMessage = async (req, res) => {
     try {
         const message_body = req.body.message;
 
-        console.log('GID',req.params.gid)
+        // console.log('GID',req.params.gid)
 
         const message = await req.user.createChat({
             message: message_body,
             groupId: req.params.gid
-        }, { transaction: t });
+        },{ transaction: t });
+
+        
 
         await t.commit();
 
-        res.status(200).json({ message: message });
+        res.status(200).json({ message: {message} });
     }
     catch (err) {
         await t.rollback();

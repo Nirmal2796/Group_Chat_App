@@ -27,6 +27,7 @@
                 </span>
 
                 <div id="group_form_div" hidden>
+                    <button id="close_group_form" onclick='hideCreateGroup()'><i class="fa fa-times"></i></button>
                     <form action="" id="group_form">
                         <input type="text" id="group_name" required>
                         <button type="submit" id="create">CREATE</button>
@@ -43,9 +44,9 @@
                 </div>
                 <div id="menu" hidden>
                     <ul>
-                        <li>Copy Link</li>
-                        <li>Share Link</li>
-                        <li>Invite via email</li>
+                        <li id="copy" onclick="copyLink()">Copy Link</li>
+                        <li id="share" onclick="shareLink()">Share Link</li>
+                        <li id="invite_email" onclick="inviteEmail()">Invite via email</li>
                     </ul>
 
                 </div>
