@@ -259,7 +259,7 @@ main {
     letter-spacing: 1px;
 }
 
-#chat_send:hover , #group_form_div form #create:hover {
+#chat_send:hover , #group_form_div form #create:hover , #invite_form_div form button:hover{
     cursor: pointer;
     background-color: rgb(5, 5, 22);
     letter-spacing: 0;
@@ -268,4 +268,61 @@ main {
 form #chat_error {
     color: rgb(46, 1, 1);
     font-weight: bold;
+}
+
+#bg-grey{
+    width: 76vw;
+    height: 62vh;
+    background: #000;
+    opacity: 50%;
+}
+
+#invite_form_div{
+    width: 20vw;
+    height: 30vh;
+    background: #fff;
+    align-items: center;
+    padding: 5px;
+    position: fixed;
+    top: 20%;
+    right: 35%;
+    border: none;
+    border-radius: 10px;
+}
+
+#invite_form_div form{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#invite_form_div form input{
+    margin: 5px;
+    padding: 5px;
+    outline:auto rgb(21, 21, 83);
+}
+
+#invite_form_div form button{
+    width: 7vw;
+    height: 7vh;
+    border: none;
+    border-radius: 10px;
+    background-color: rgb(21, 21, 83);
+    color: white;
+    font-size: medium;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+#close_invite{
+    background: none;
+    border: none;
+    color: rgb(21, 21, 83);
+    /* margin: 5px; */
+    width: 6vw;
+    height: 6vh;
+    font-size: large;
+    margin-left: 70%;
+    cursor: pointer;
 }

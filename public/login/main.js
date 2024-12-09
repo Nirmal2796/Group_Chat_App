@@ -61,7 +61,7 @@ async function onSignUp(e) {
             sign_up_form.reset();
         }
         catch (err) {
-            
+
             sign_up_form.reset();
 
             sign_up_msg.innerHTML = `${err.response.data}`;
@@ -97,22 +97,66 @@ async function onLogin(e) {
                 password: login_user_password.value
             };
 
-            const result = await axios.post("http://localhost:3000/login", User);
+            //window.location.search will return ?redirect='';
+            //new URLSearchParams() This takes the query string and turns it into an object-like structure that lets you easily work with the parameters.
+            //Once you create a URLSearchParams object, you can:
+            // Get specific parameter values.
+            // Add or remove parameters.
+            // Iterate over all the parameters.            
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirect = urlParams.get('redirect');
 
+
+            // console.log(redirect);
+
+            const result = await axios.post(`http://localhost:3000/login`, User);
+
+            console.log(result.data);
             alert(result.data.message);
 
-            window.location.href = '../chat/chat.html';
+
+            // window.location.href = '../chat/chat.html';
 
             localStorage.setItem('token', result.data.token);
+
+            
+            if (redirect) {
+                // Perform the POST request to the redirect URL
+                const glink = decodeURIComponent(redirect).split('/join-group/');
+                console.log(glink[1]);
+                const redirectResponse = await axios.post(`http://localhost:3000/join-group/${glink[1]}/process`, {},
+                    { headers: { 'Auth': result.data.token } }
+                );
+
+                alert(redirectResponse.data.message || 'Successfully added to the group!');
+
+                console.log('redirectResponse',redirectResponse);
+
+                // Redirect to the chat page after successful group addition
+                window.location.href = '../chat/chat.html';
+            } else {
+                // Default fallback
+                window.location.href = '../chat/chat.html';
+            }
 
             login_form.reset();
         }
         catch (err) {
+            
             login_form.reset();
+            // Handle the join group response:
+         if (err.response.status === 409) {
+            // If the user is already a member
+            alert('You are already a member of this group.');
+            window.location.href = '../chat/chat.html';; // Redirect to chat page even if already a member
+        }
+        else{
+
             login_msg.innerHTML = `${err.response.data.message}`;
             setTimeout(() => {
                 login_msg.removeChild(login_msg.firstChild);
             }, 2000);
+        }
 
             console.log(err);
         }

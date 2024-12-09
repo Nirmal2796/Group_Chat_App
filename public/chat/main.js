@@ -7,9 +7,12 @@ const create_group = document.getElementById('create_group');
 const group_form = document.getElementById('group_form');
 const group_name = document.getElementById('group_name');
 const group_name_text = document.getElementById('group_name_text');
+const invite_form=document.getElementById('invite_form');
+const invite_email_input=document.getElementById('invite_email_input');
 
 send_message_form.addEventListener('submit', onSendMessage);
 group_form.addEventListener('submit', createGroup);
+invite_form.addEventListener('submit',inviteViaEmail);
 
 document.addEventListener('DOMContentLoaded', DomLoad);
 
@@ -274,9 +277,9 @@ async function getGroup() {
 //JOIN GROUP
 async function joinGroup(params) {
 
-    const gid = localStorage.getItem('gid');
+    // const gid = localStorage.getItem('gid');
 
-    const res = await axios.get(`http://localhost:3000/join-group/${gid}`, { headers: { 'Auth': token } });
+    // const res = await axios.get(`http://localhost:3000/join-group/${gid}`, { headers: { 'Auth': token } });
 
 }
 
@@ -311,4 +314,62 @@ async function shareLink(){
         // Fallback for browsers that don't support Web Share API
         console.log("Web Share API not supported");
       }
+}
+
+
+function inviteEmail() {
+    const invite_form_div = document.getElementById('invite_form_div');
+    invite_form_div.hidden=false;
+
+    document.getElementById('bg-grey').hidden=false;
+    close_btn.hidden=true;
+    menu_btn.hidden=false;
+    menu.hidden=true;
+}
+
+function closeInvite(){
+    const invite_form_div = document.getElementById('invite_form_div');
+    invite_form_div.hidden=true;
+
+    document.getElementById('bg-grey').hidden=true;
+}
+
+async function inviteViaEmail(e) {
+
+    e.preventDefault();
+
+    const glink=localStorage.getItem('glink');
+
+    if (invite_email_input.value == '') {
+
+        // chat_error.innerHTML = 'Please enter a name';
+
+        setTimeout(() => {
+            // chat_error.removeChild(chat_error.firstChild);
+        }, 2000);
+    }
+    else {
+
+        try {
+
+            email = {
+                invite_email: invite_email_input.value,
+                glink:glink
+            }
+
+            const res = await axios.post('http://localhost:3000/invite', email, { headers: { 'Auth': token } });
+
+            console.log(res);
+
+
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+        invite_form.reset();
+        closeInvite();
+    }
+
+    
 }

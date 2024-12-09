@@ -72,6 +72,9 @@ const postLoginUser = async (req, res) => {
                     throw new Error('Something Went Wrong');
                 }
                 if(result){
+                     // Check for redirect URL or default to home
+                    //  console.log(req.query);
+                    //  const redirectUrl = req.query.redirect ? decodeURIComponent(req.query.redirect) : '/';
                     res.status(200).json({ message: 'User logged in Successfully' , token: JWTServices.generateToken(user[0].id) });
                 }
                 else{
