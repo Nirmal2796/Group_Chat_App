@@ -142,13 +142,17 @@ async function onLogin(e) {
             login_form.reset();
         }
         catch (err) {
-            
+
             login_form.reset();
             // Handle the join group response:
          if (err.response.status === 409) {
             // If the user is already a member
             alert('You are already a member of this group.');
-            window.location.href = '../chat/chat.html';; // Redirect to chat page even if already a member
+            window.location.href = '../chat/chat.html'; // Redirect to chat page even if already a member
+        }
+        else if(err.response.status === 404){
+            alert('Group Does not Exist');
+            window.location.href = '../chat/chat.html';
         }
         else{
 
