@@ -38,7 +38,9 @@
 
             <div class="chat_window">
                 <div id="group_name_bar">
-                    <h3 id="group_name_text"></h3>
+                    <div id="group_name_div" onclick="showGroupMembers()">
+                        <h3 id="group_name_text"></h3>
+                    </div>
                     <button id="menu_btn" name="menu"onclick='showMenu(this)'><i class="fa fa-ellipsis-v"></i></button>
                     <button id="close_btn" name="close" onclick='showMenu(this)' hidden><i class="fa fa-times"></i></button>
                 </div>
@@ -58,9 +60,15 @@
                         <button type="submit" id="invite_send">SEND</button>
                     </form>
                 </div>
-                <div class="chat_read">
+                <div class="chat_read" id="chat_read_div">
                     <div id="chat_box">
                     </div>
+                </div>
+
+                <div id="group_members_div" hidden>
+                    <ul id="group_members_list">
+                        <li>ABC <button>Remove</button></li>
+                    </ul>
                 </div>
             </div>
         </div>

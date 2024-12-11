@@ -6,7 +6,7 @@ const User = require('../models/user');
 const User_Group = require('../models/user_group');
 const sequelize = require('../util/database');
 const { v4: uuidv4 } = require('uuid');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 
 exports.createGroup = async (req, res) => {
     const t = await sequelize.transaction();
@@ -190,4 +190,98 @@ exports.inviteViaEmail = async (req, res) => {
         console.log(err);
         res.status(500).json({ success: false, message: 'Something went wrong' });
     }
+}
+
+
+exports.getGroupMembers=async(req,res)=>{
+
+    try {
+
+        const gid=req.params.gid;
+
+        const groups = await Group.findByPk(gid, {
+            include: {
+                model: User,
+                attributes: ['id', 'name']
+            }
+        })
+
+        // console.log(groups.groups);
+
+        res.status(200).json({ users: groups.users});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false });
+    }
+}
+
+
+exports.removeGroupMembers=async(req,res)=>{
+
+    const t = await sequelize.transaction();
+    try{
+
+        const {groupId,userId}=req.body;
+    
+        const member=await User_Group.findOne({
+            where:{
+                [Op.and]:{
+                    groupId:groupId,
+                    userId:userId
+                }
+            }
+        });
+
+        member.destroy();
+
+        await t.commit();
+
+        // console.log(member);
+        
+        res.status(200).json({member:member});
+    }
+    catch (err) {
+        await t.rollback();
+        console.log(err);
+        res.status(500).json({ success: false });
+    }
+    
+    
+}
+
+
+exports.makeAdmin=async(req,res)=>{
+
+    const t = await sequelize.transaction();
+
+    try{
+
+        const {groupId,userId}=req.body;
+    
+        const member=await User_Group.update({
+
+            role:'admin'
+        },  
+            {
+            where:{
+                [Op.and]:{
+                    groupId:groupId,
+                    userId:userId
+                }
+            }
+        });
+
+
+        // console.log(member);
+        
+        res.status(200).json({member:member});
+    }
+    catch (err) {
+        await t.rollback()
+        console.log(err);
+        res.status(500).json({ success: false });
+    }
+    
+    
 }

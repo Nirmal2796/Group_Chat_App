@@ -191,6 +191,11 @@ main {
     padding: 10px 5px 0 10px;
 }
 
+#group_name_div{
+    width: 90%;
+    background: #000;
+}
+
 #group_form_div form input {
     margin-left: 5px;
     padding-top: 5px;

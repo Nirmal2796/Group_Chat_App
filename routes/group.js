@@ -17,5 +17,11 @@ router.post('/join-group/:glink/process',userAuthentication.authentication,group
 
 router.post('/invite',userAuthentication.authentication,groupController.inviteViaEmail);
 
+router.get('/get-groupMembers/:gid',userAuthentication.authentication,groupController.getGroupMembers);
+
+router.post('/remove-member',userAuthentication.authentication,groupController.removeGroupMembers);
+
+router.post('/makeAdmin',userAuthentication.authentication,groupController.makeAdmin);
+
 
 module.exports=router;
