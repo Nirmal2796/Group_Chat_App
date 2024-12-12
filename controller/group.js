@@ -285,3 +285,72 @@ exports.makeAdmin=async(req,res)=>{
     
     
 }
+
+exports.addUser = async (req, res) => {
+
+    const t = await sequelize.transaction();
+    try {
+
+        const {email,gid} = req.body;
+
+        console.log('in join group')
+
+        // const group = await Group.findOne({where:{id}})    
+
+        const group = Group.findByPk(gid);
+        const user= User.findOne({where:{email:email}});
+        const joinedGroup = User_Group.findOne({
+            where: {
+                [Op.and]:[
+                    {
+                        groupId:gid
+                    },
+                    {
+                       role:{
+                        [Op.or]:['admin','member']
+                       }
+                    }
+                ]
+            }
+        })
+
+        const result=await Promise.all([group,user,joinedGroup]);
+
+        
+        // console.log(group);
+        // console.log(user);
+        // console.log(result[0].id);
+   
+        if(!result[0]){
+            return res.status(403).json({ message: 'Group does not exist' });
+        }
+
+        if (!result[1]) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if(result[2]){
+            // console.log(joinedGroup);
+            return res.status(409).json({ message: 'You are already a member of this group' });
+        }
+        
+        const user_group = await User_Group.create({
+            groupId: result[0].id,
+            userId: req.user.id,
+            role: 'member'
+        }, { transaction: t });
+
+
+        await t.commit();
+
+        res.status(200).json({ user_group: user_group });
+
+
+    }
+    catch (err) {
+        await t.rollback();
+        console.log(err);
+        res.status(500).json({ success: false, message:err});
+    }
+
+}

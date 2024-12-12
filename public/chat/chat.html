@@ -22,14 +22,29 @@
 
                 </ul>
 
+                <span id="add_user">
+                    <button id="add_user_button" onclick="showAddUser()">
+                        <i class="fa fa-user-plus"></i>
+                    </button>
+                </span>
+
+                <div id="add_user_form_div" hidden>
+                    <button id="close_add_user_form" onclick='hideAddUser()'><i class="fa fa-times"></i></button>
+                    <form action="" id="add_user_form">
+                        <input type="text" id="add_user_email" placeholder=" Email Id" required>
+                        <button type="submit" id="add">ADD</button>
+                    </form>
+                </div>
+
                 <span id="plus_icon">
                     <button id="create_group" onclick='showCreateGroup()'><i class="fa">&#xf067;</i></i></button>
                 </span>
 
+
                 <div id="group_form_div" hidden>
                     <button id="close_group_form" onclick='hideCreateGroup()'><i class="fa fa-times"></i></button>
                     <form action="" id="group_form">
-                        <input type="text" id="group_name" required>
+                        <input type="text" id="group_name" placeholder=" Email Id" required>
                         <button type="submit" id="create">CREATE</button>
                     </form>
                 </div>
@@ -38,22 +53,29 @@
 
             <div class="chat_window">
                 <div id="group_name_bar">
+                    <div id="back_icon_div" onclick="hideGroupMembers()">
+                        <i class="fa fa-user-circle" id="profile_icon"></i>
+                        <i class="fa fa-long-arrow-left" id="back_icon" style="display: none;"></i>
+                    </div>
+
                     <div id="group_name_div" onclick="showGroupMembers()">
                         <h3 id="group_name_text"></h3>
                     </div>
-                    <button id="menu_btn" name="menu"onclick='showMenu(this)'><i class="fa fa-ellipsis-v"></i></button>
-                    <button id="close_btn" name="close" onclick='showMenu(this)' hidden><i class="fa fa-times"></i></button>
+                    <button id="menu_btn" name="menu" onclick='showMenu(this)'><i class="fa fa-ellipsis-v"></i></button>
+                    <button id="close_btn" name="close" onclick='showMenu(this)' hidden><i
+                            class="fa fa-times"></i></button>
                 </div>
                 <div id="menu" hidden>
                     <ul>
                         <li id="copy" onclick="copyLink()">Copy Link</li>
                         <li id="share" onclick="shareLink()">Share Link</li>
-                        <li id="invite_email" onclick="inviteEmail()">Invite via email</li>
+                        <li id="invite_email" onclick="showInviteEmail()">Invite via email</li>
                     </ul>
                 </div>
                 <div id="bg-grey" hidden></div>
                 <div id="invite_form_div" hidden>
-                    <button id="close_invite" name="close" onclick='closeInvite(this)'><i class="fa fa-times"></i></button>
+                    <button id="close_invite" name="close" onclick='closeInvite(this)'><i
+                            class="fa fa-times"></i></button>
                     <form action="" id="invite_form">
                         <!-- <div id="chat_error"></div> -->
                         <input type="text" id="invite_email_input" placeholder="Email ID" required>
@@ -66,9 +88,13 @@
                 </div>
 
                 <div id="group_members_div" hidden>
-                    <ul id="group_members_list">
+                    <!-- <ul id="group_members_list">
                         <li>ABC <button>Remove</button></li>
-                    </ul>
+                    </ul> -->
+
+                    <table id="group_members_list">
+                        
+                    </table>
                 </div>
             </div>
         </div>

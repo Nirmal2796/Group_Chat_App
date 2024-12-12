@@ -23,5 +23,7 @@ router.post('/remove-member',userAuthentication.authentication,groupController.r
 
 router.post('/makeAdmin',userAuthentication.authentication,groupController.makeAdmin);
 
+router.post('/add_user',userAuthentication.authentication,groupController.addUser);
+
 
 module.exports=router;

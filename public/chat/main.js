@@ -1,3 +1,5 @@
+
+//HTML ELEMENTS
 const group_list = document.getElementById('group_list');
 const chat_box = document.getElementById('chat_box');
 const send_message_form = document.getElementById('send_message');
@@ -13,19 +15,24 @@ const invite_form = document.getElementById('invite_form');
 const invite_email_input = document.getElementById('invite_email_input');
 const group_members_div = document.getElementById('group_members_div');
 const group_members_list = document.getElementById('group_members_list');
+const add_user_email=document.getElementById('add_user_email');
+const add_user_form=document.getElementById('add_user_form');
 
+//HTML FORM ELEMENTS EVENT LISTENER
 send_message_form.addEventListener('submit', onSendMessage);
 group_form.addEventListener('submit', createGroup);
 invite_form.addEventListener('submit', inviteViaEmail);
+add_user_form.addEventListener('submit',addUser);
 
+//DOM CONTENT LOAD EVENT
 document.addEventListener('DOMContentLoaded', DomLoad);
 
 
-//token
+//TOKEN
 const token = localStorage.getItem('token');
 
 
-//interval;
+//INTERVAL;
 let myInterval;
 
 //DOMLOAD
@@ -69,7 +76,7 @@ async function getMessage(gid, glink) {
 
     console.log(res.data.messages);
 
-    myInterval=setInterval(async () => {
+    myInterval = setInterval(async () => {
 
         const res = await axios.get(`http://localhost:3000/get-messages/${gid}?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
 
@@ -117,6 +124,9 @@ function AddToLocalStorage(messages) {
 
 
 
+
+    hideGroupMembers();
+
     chat_box.innerHTML = '';
 
     for (m in OldMessages) {
@@ -127,6 +137,7 @@ function AddToLocalStorage(messages) {
 
 }
 
+//ADD TO LOCAL STORAGE LOGIC EXPLANATION
 /*
 1)Explanation of Logic
 
@@ -201,6 +212,75 @@ function showMessages(message) {
     console.log(message);
     const newMessage = `<p>${message.user.name} : ${message.message}</p>`;
     chat_box.innerHTML += newMessage;
+}
+
+
+//SHOW SEARCH FORM
+function showAddUser() {
+    document.getElementById('add_user').hidden = true;
+    document.getElementById('add_user_form_div').hidden = false;
+    group_list.hidden = true;
+}
+
+//HIDE SEARCH FORM
+function hideAddUser() {
+    document.getElementById('add_user').hidden = false;
+    document.getElementById('add_user_form_div').hidden = true;
+    group_list.hidden = false;
+}
+
+//SEARCH USER API CALL AFTER INITE FORM SUBMIT
+async function addUser(e) {
+    
+    e.preventDefault();
+
+    const gid = localStorage.getItem('gid');
+
+    if (add_user_email.value == '') {
+
+        // chat_error.innerHTML = 'Please enter a name';
+
+        setTimeout(() => {
+            // chat_error.removeChild(chat_error.firstChild);
+        }, 2000);
+    }
+    else {
+
+        try {
+
+           add_user = {
+                email:add_user_email.value,
+                gid:gid
+            }
+
+            const res = await axios.post('http://localhost:3000/add_user', add_user, { headers: { 'Auth': token } });
+
+            // console.log(res.response.status);
+
+    
+                alert('User added to the group');
+                getGroup();
+            
+
+
+        }
+        catch (err) {
+            console.log(err);
+            if(err.response.status == 403){
+                alert(err.response.data.message);
+            }
+            else if(err.response.status==404){
+                alert(err.response.data.message);
+            }
+            else if(err.response.status===409){
+                // console.log(err.response.data);
+                alert(err.response.data.message);
+            }
+        }
+
+        add_user_form.reset();
+        // hideSearch();
+    }
 }
 
 //SHOW CREATE GROUP FORM
@@ -322,8 +402,8 @@ async function shareLink() {
     }
 }
 
-
-function inviteEmail() {
+//SHOW INVITE VIA EMAIL
+function showInviteEmail() {
     const invite_form_div = document.getElementById('invite_form_div');
     invite_form_div.hidden = false;
 
@@ -333,6 +413,7 @@ function inviteEmail() {
     menu.hidden = true;
 }
 
+//CLOSE INVITE FORM
 function closeInvite() {
     const invite_form_div = document.getElementById('invite_form_div');
     invite_form_div.hidden = true;
@@ -340,6 +421,7 @@ function closeInvite() {
     document.getElementById('bg-grey').hidden = true;
 }
 
+//INVITE VIA EMAIL API CALL AFTER INITE FORM SUBMIT
 async function inviteViaEmail(e) {
 
     e.preventDefault();
@@ -380,13 +462,27 @@ async function inviteViaEmail(e) {
 
 }
 
+//HIDE FROP MEMBERS
+function hideGroupMembers() {
 
+    if (chat_read_div.hidden) {
+        group_members_div.hidden = true;
+        chat_read_div.hidden = false;
+        document.getElementById('back_icon').style.display = 'none';
+        document.getElementById('profile_icon').style.display = 'block';
+    }
+
+}
+
+//SHOW GROUP MEMBERS
 async function showGroupMembers() {
 
     try {
 
         group_members_div.hidden = false;
         chat_read_div.hidden = true;
+        document.getElementById('back_icon').style.display = 'block';
+        document.getElementById('profile_icon').style.display = 'none';
 
         const gid = localStorage.getItem('gid');
 
@@ -396,27 +492,41 @@ async function showGroupMembers() {
 
         console.log(res.data.users);
 
+        group_members_list.innerHTML = '';
+
         for (u in res.data.users) {
 
             console.log(res.data.users[u].user_group);
 
-            if(res.data.users[u].user_group.role=='admin'){
-                const li = `<li id='member-${res.data.users[u].id}'>${res.data.users[u].name}
-                <button id='remove-${res.data.users[u].id}' onClick='removeGroupMember(${res.data.users[u].id} , ${gid})'>REMOVE</button>
-                Admin
-                </li>`;
-                    group_members_list.innerHTML += li;
-            }
-            else{
+            if (res.data.users[u].user_group.role == 'admin') {
 
-                const li = `<li id='member-${res.data.users[u].id}'>${res.data.users[u].name}
-                            <button id='remove-${res.data.users[u].id}' onClick='removeGroupMember(${res.data.users[u].id} , ${gid})'>REMOVE</button>
-                            <button id='admin-${res.data.users[u].id}' onClick='makeAdmin(${res.data.users[u].id} , ${gid})'>Make Admin</button>
-                            </li>`;
-                group_members_list.innerHTML += li;
+                const tr = `<tr id='member-${res.data.users[u].id}'>
+                                <td id='td_name'>${res.data.users[u].name}</td>
+                                <td id='role'>Admin</td>
+                                <td><button id='remove-${res.data.users[u].id}' onClick='removeGroupMember(${res.data.users[u].id} , ${gid})'><i class="fa fa-user-times"></i></button></td>
+                            </tr>`
+
+                group_members_list.innerHTML += tr;
+                
+                // group_members_list.innerHTML+=`<tr>
+                //             <td id='td_name'>komal</td>
+                //             <td id='role'>Admin</td>
+                //             <td><button><i class="fa fa-user-times"></i></button></td>
+                //         </tr>`
+
+
+            }
+            else {
+
+                const tr = `<tr id='member-${res.data.users[u].id}'>
+                                <td id='td_name'>${res.data.users[u].name}</td>
+                                <td></td>
+                                <td><button id='remove-${res.data.users[u].id}' onClick='removeGroupMember(${res.data.users[u].id} , ${gid})'>REMOVE</button></td>
+                            </tr>`
+
+                group_members_list.innerHTML += tr;
             }
         }
-
 
     }
     catch (err) {
@@ -425,11 +535,12 @@ async function showGroupMembers() {
 
 }
 
+//REMOVE GROUP MEMBERS
 async function removeGroupMember(userId, groupId) {
 
     try {
 
-        const res = await axios.post(`http://localhost:3000/remove-member`,{userId,groupId}, { headers: { 'Auth': token } });
+        const res = await axios.post(`http://localhost:3000/remove-member`, { userId, groupId }, { headers: { 'Auth': token } });
 
         console.log(res);
 
@@ -441,17 +552,26 @@ async function removeGroupMember(userId, groupId) {
     }
 }
 
+//MAKE USERA AN ADMIN
 async function makeAdmin(userId, groupId) {
 
     try {
 
-        const res = await axios.post(`http://localhost:3000/makeAdmin`,{userId,groupId}, { headers: { 'Auth': token } });
+        const res = await axios.post(`http://localhost:3000/makeAdmin`, { userId, groupId }, { headers: { 'Auth': token } });
 
         console.log(res);
 
-        document.getElementById(`admin-${userId}`).remove();
+        // document.getElementById(`admin-${userId}`).remove();
 
-        document.getElementById(`member-${userId}`).innerHTML+='<p>Admin</p>'
+        // const tr = `<tr id='member-${res.data.user.id}'>
+        //                         <td id='td_name'>${res.data.users[u].name}</td>
+        //                         <td>Admin</td>
+        //                         <td><button id='remove-${res.data.users[u].id}' onClick='removeGroupMember(${res.data.users[u].id} , ${gid})'>REMOVE</button></td>
+        //                     </tr>`
+
+        //         group_members_list.innerHTML += tr;
+
+        document.getElementById(`member-${userId}`).innerHTML += '<td>Admin</td>'
 
     }
     catch (err) {
