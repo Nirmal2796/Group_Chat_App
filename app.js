@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
 
 const express = require('express');
 
@@ -7,9 +8,14 @@ const cors = require('cors');
 const helemt = require('helmet');
 const morgan = require('morgan');
 
-require('dotenv').config();
 
 const app = express();
+
+const server = http.createServer(app); // Create HTTP server
+const io=require('socket.io')(server);
+
+require('dotenv').config();
+
 
 const bodyParser = require('body-parser');
 
@@ -24,6 +30,8 @@ const User_Group=require('./models/user_group');
 const userRouter = require('./routes/user');
 const chatRouter = require('./routes/chat');
 const groupRouter=require('./routes/group');
+
+const socketAuthMiddleware=require('./middleware/socketUserAuthentication');
 
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
@@ -46,6 +54,44 @@ app.use(userRouter);
 app.use(chatRouter);
 app.use(groupRouter);
 
+
+io.use(socketAuthMiddleware.authentication);
+
+//SOCKET IO CONNECTION 
+io.on('connection',socket=>{
+
+
+    // console.log('SCOKET ID:::::',socket.id);
+
+
+    //ON SEND MESSAGE EVENT
+    socket.on('send-message', (msg,room) => {       
+        // console.log('message: ' + msg);
+        data={
+            message:msg,
+            user:socket.user
+        }
+        //RECEIVE MESSAGE
+        // io.emit('receive-message',data);
+
+        console.log(room);
+        io.to(room).emit('receive-message',data);
+      });
+      
+
+    //JOIN ROOM
+    socket.on('join-room',room=>{
+        console.log(room);
+        socket.join(room);
+    })
+
+
+    //ON DISCONNECT
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+      });
+})
+
 User.hasMany(Chat); //one to many
 Chat.belongsTo(User); //one to one
 
@@ -59,6 +105,7 @@ sequelize
     .sync()
     // .sync({force:true})
     .then(result => {
-        app.listen(3000);
+        // app.listen(3000);
+        server.listen(3000);
     })
     .catch(err => console.log(err));

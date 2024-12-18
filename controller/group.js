@@ -45,7 +45,8 @@ exports.createGroup = async (req, res) => {
 exports.getGroups = async (req, res) => {
     try {
 
-        console.log(req.user.id);
+        // console.log(req.user.id);
+
         const groups = await User.findByPk(req.user.id, {
             include: {
                 model: Group,
@@ -53,9 +54,15 @@ exports.getGroups = async (req, res) => {
             }
         })
 
+        // const groups = await User.findAll({
+        //     include:{
+        //         model:Group
+        //     }
+        // })
 
 
-        // console.log(groups.groups);
+
+        // console.log(groups);
 
         res.status(200).json({ groups: groups.groups });
     }
@@ -93,20 +100,22 @@ exports.joinGroup = async (req, res) => {
 
         const joinedGroup = await User_Group.findOne({
             where: {
-                [Op.and]:[
+                [Op.and]: [{
+                    userId:req.user.id
+                },
                     {
-                        groupId:group.id
+                        groupId: group.id
                     },
                     {
-                       role:{
-                        [Op.or]:['admin','member']
-                       }
+                        role: {
+                            [Op.or]: ['admin', 'member']
+                        }
                     }
                 ]
             }
         })
 
-        if(joinedGroup){
+        if (joinedGroup) {
             // console.log(joinedGroup);
             return res.status(409).json({ message: 'You are already a member of this group' });
         }
@@ -127,7 +136,7 @@ exports.joinGroup = async (req, res) => {
     catch (err) {
         await t.rollback();
         console.log(err);
-        res.status(500).json({ success: false, message:err});
+        res.status(500).json({ success: false, message: err });
     }
 
 }
@@ -193,11 +202,11 @@ exports.inviteViaEmail = async (req, res) => {
 }
 
 
-exports.getGroupMembers=async(req,res)=>{
+exports.getGroupMembers = async (req, res) => {
 
     try {
 
-        const gid=req.params.gid;
+        const gid = req.params.gid;
 
         const groups = await Group.findByPk(gid, {
             include: {
@@ -208,7 +217,7 @@ exports.getGroupMembers=async(req,res)=>{
 
         // console.log(groups.groups);
 
-        res.status(200).json({ users: groups.users});
+        res.status(200).json({ users: groups.users });
     }
     catch (err) {
         console.log(err);
@@ -217,18 +226,18 @@ exports.getGroupMembers=async(req,res)=>{
 }
 
 
-exports.removeGroupMembers=async(req,res)=>{
+exports.removeGroupMembers = async (req, res) => {
 
     const t = await sequelize.transaction();
-    try{
+    try {
 
-        const {groupId,userId}=req.body;
-    
-        const member=await User_Group.findOne({
-            where:{
-                [Op.and]:{
-                    groupId:groupId,
-                    userId:userId
+        const { groupId, userId } = req.body;
+
+        const member = await User_Group.findOne({
+            where: {
+                [Op.and]: {
+                    groupId: groupId,
+                    userId: userId
                 }
             }
         });
@@ -238,52 +247,52 @@ exports.removeGroupMembers=async(req,res)=>{
         await t.commit();
 
         // console.log(member);
-        
-        res.status(200).json({member:member});
+
+        res.status(200).json({ member: member });
     }
     catch (err) {
         await t.rollback();
         console.log(err);
         res.status(500).json({ success: false });
     }
-    
-    
+
+
 }
 
 
-exports.makeAdmin=async(req,res)=>{
+exports.makeAdmin = async (req, res) => {
 
     const t = await sequelize.transaction();
 
-    try{
+    try {
 
-        const {groupId,userId}=req.body;
-    
-        const member=await User_Group.update({
+        const { groupId, userId } = req.body;
 
-            role:'admin'
-        },  
+        const member = await User_Group.update({
+
+            role: 'admin'
+        },
             {
-            where:{
-                [Op.and]:{
-                    groupId:groupId,
-                    userId:userId
+                where: {
+                    [Op.and]: {
+                        groupId: groupId,
+                        userId: userId
+                    }
                 }
-            }
-        });
+            });
 
 
         // console.log(member);
-        
-        res.status(200).json({member:member});
+
+        res.status(200).json({ member: member });
     }
     catch (err) {
         await t.rollback()
         console.log(err);
         res.status(500).json({ success: false });
     }
-    
-    
+
+
 }
 
 exports.addUser = async (req, res) => {
@@ -291,37 +300,37 @@ exports.addUser = async (req, res) => {
     const t = await sequelize.transaction();
     try {
 
-        const {email,gid} = req.body;
+        const { email, gid } = req.body;
 
         console.log('in join group')
 
         // const group = await Group.findOne({where:{id}})    
 
         const group = Group.findByPk(gid);
-        const user= User.findOne({where:{email:email}});
+        const user = User.findOne({ where: { email: email } });
         const joinedGroup = User_Group.findOne({
             where: {
-                [Op.and]:[
+                [Op.and]: [
                     {
-                        groupId:gid
+                        groupId: gid
                     },
                     {
-                       role:{
-                        [Op.or]:['admin','member']
-                       }
+                        role: {
+                            [Op.or]: ['admin', 'member']
+                        }
                     }
                 ]
             }
         })
 
-        const result=await Promise.all([group,user,joinedGroup]);
+        const result = await Promise.all([group, user, joinedGroup]);
 
-        
+
         // console.log(group);
         // console.log(user);
         // console.log(result[0].id);
-   
-        if(!result[0]){
+
+        if (!result[0]) {
             return res.status(403).json({ message: 'Group does not exist' });
         }
 
@@ -329,11 +338,11 @@ exports.addUser = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        if(result[2]){
+        if (result[2]) {
             // console.log(joinedGroup);
             return res.status(409).json({ message: 'You are already a member of this group' });
         }
-        
+
         const user_group = await User_Group.create({
             groupId: result[0].id,
             userId: req.user.id,
@@ -350,7 +359,7 @@ exports.addUser = async (req, res) => {
     catch (err) {
         await t.rollback();
         console.log(err);
-        res.status(500).json({ success: false, message:err});
+        res.status(500).json({ success: false, message: err });
     }
 
 }

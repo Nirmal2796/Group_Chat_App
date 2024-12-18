@@ -19,7 +19,7 @@ exports.authentication = async (req, res,next) => {
             //The return keyword in JavaScript is used to stop the execution of the current function and exit early.
 
             const redirectUrl = encodeURIComponent(req.originalUrl);
-            console.log(redirectUrl);
+            // console.log(redirectUrl);
             return res.redirect(`/login/login.html?redirect=${redirectUrl}`);
         }
 

@@ -8,52 +8,38 @@ const { where, NUMBER, Op } = require('sequelize');
 exports.getMessage = async (req, res) => {
     try {
 
-        const LastMessageID = JSON.parse(req.query.LastMessageID);
+        // const LastMessageID = JSON.parse(req.query.LastMessageID);
 
         const gid = req.params.gid;
 
 
         const messages = await Chat.findAll({
-            attributes: ['id', 'message'],
+            attributes: ['id', 'message','createdAt'],
             include: [{ model: Group, attributes: ['id'] },{
                 model:User, attributes:['name']
-            }
+            },
+            
         ],
             where: {
-                [Op.and]: [
-                    {
+                // [Op.and]: [
+                    // {
                         'groupId': gid
-                    },
-                    {
-                        'id': { [Op.gt]: LastMessageID }
-                    }
-                ]
+                    // },
+                //     {
+                //         'id': { [Op.gt]: LastMessageID }
+                //     }
+                // ]
             },
+            order: [['createdAt', 'DESC']],
             limit: 10,
         }
         );
 
-        // console.log(messages);
-        // const groups=await Group.findAll({where:{userId: req.user.id}});
+        const sortedMessages=messages.sort((a, b) => a.createdAt - b.createdAt); 
 
-
-        // const groups=await Group.findAll({
-        //     include:[{
-        //         model:User,
-        //         through:{
-        //             attributes:[],
-        //             where:{userId:req.user.id}
-        //         }
-        //     }]
-        // });
-
-
-        // const messages=await Chat.findAll({
-
-        // })
-
-
-        res.status(200).json({ messages: messages });
+        // console.log(sortedMessages);
+        
+        res.status(200).json({ messages: sortedMessages });
     }
     catch (err) {
         console.log(err);

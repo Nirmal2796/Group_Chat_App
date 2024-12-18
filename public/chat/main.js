@@ -15,14 +15,14 @@ const invite_form = document.getElementById('invite_form');
 const invite_email_input = document.getElementById('invite_email_input');
 const group_members_div = document.getElementById('group_members_div');
 const group_members_list = document.getElementById('group_members_list');
-const add_user_email=document.getElementById('add_user_email');
-const add_user_form=document.getElementById('add_user_form');
+const add_user_email = document.getElementById('add_user_email');
+const add_user_form = document.getElementById('add_user_form');
 
 //HTML FORM ELEMENTS EVENT LISTENER
 send_message_form.addEventListener('submit', onSendMessage);
 group_form.addEventListener('submit', createGroup);
 invite_form.addEventListener('submit', inviteViaEmail);
-add_user_form.addEventListener('submit',addUser);
+add_user_form.addEventListener('submit', addUser);
 
 //DOM CONTENT LOAD EVENT
 document.addEventListener('DOMContentLoaded', DomLoad);
@@ -35,12 +35,27 @@ const token = localStorage.getItem('token');
 //INTERVAL;
 let myInterval;
 
+//SOCKET INITIALIZATION
+var socket = io({
+    auth: {
+        token: token // Send the token during the handshake
+    }
+});
+
+
+//RECEIVE MESSAGE
+socket.on('receive-message', (message) => {
+    // chat_box.innerHTML = '';
+    console.log(message);
+    showMessages(message);
+})
+
+
+
 //DOMLOAD
 async function DomLoad() {
     try {
 
-
-        // getMessage(1);
         getGroup();
 
     }
@@ -51,44 +66,76 @@ async function DomLoad() {
 }
 
 
+//GET OLD MESSAGES
+async function getOldMessage(gid,glink) {
+
+    localStorage.setItem('gid', gid);
+
+    localStorage.setItem('glink', `http://localhost:3000/join-group/${glink}`);
+
+    group_name_text.innerHTML = document.getElementById(gid).innerText;
+
+
+    const res = await axios.get(`http://localhost:3000/get-messages/${gid}`, { headers: { 'Auth': token } });
+
+    const messages = res.data.messages;
+
+    // AddToLocalStorage(messages);
+
+    chat_box.innerHTML = '';
+
+    for (m in messages) {
+
+        showMessages(messages[m]);
+
+    }
+
+
+    //JOIN ROOM
+    socket.emit('join-room',gid);
+
+}
+
+
 //GET MESSAGES
 async function getMessage(gid, glink) {
 
-    let LastMessageID = localStorage.getItem('LastMessageIDLS');
+    // let LastMessageID = localStorage.getItem('LastMessageIDLS');
 
     localStorage.setItem('gid', gid);
     localStorage.setItem('glink', `http://localhost:3000/join-group/${glink}`);
 
-    if (LastMessageID == undefined) {
-        LastMessageID = '-1';
-    }
+    // if (LastMessageID == undefined) {
+    //     LastMessageID = '-1';
+    // }
 
     console.log('GID', gid);
 
     group_name_text.innerHTML = document.getElementById(gid).innerText;
 
 
-    const res = await axios.get(`http://localhost:3000/get-messages/${gid}?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
+    // const res = await axios.get(`http://localhost:3000/get-messages/${gid}?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
 
     // const res = await axios.get(`http://localhost:3000/get-messages?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
 
     // const messages = res.data.messages.chats;
 
-    console.log(res.data.messages);
+    // console.log(res.data.messages);
 
-    myInterval = setInterval(async () => {
 
-        const res = await axios.get(`http://localhost:3000/get-messages/${gid}?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
+    // myInterval = setInterval(async () => {
 
-        const messages = res.data.messages;
+    //     const res = await axios.get(`http://localhost:3000/get-messages/${gid}?LastMessageID=${LastMessageID}`, { headers: { 'Auth': token } });
 
-        AddToLocalStorage(messages);
+    //     const messages = res.data.messages;
 
-        LastMessageID = localStorage.getItem('LastMessageIDLS');
+    //     AddToLocalStorage(messages);
 
-    }, 1000);
+    //     LastMessageID = localStorage.getItem('LastMessageIDLS');
 
-    getGroup();
+    // }, 1000);
+
+    // getGroup();
 
 
 }
@@ -188,14 +235,17 @@ async function onSendMessage(e) {
                 message: chat_message.value
             }
 
-            const gid = localStorage.getItem('gid');
+            const gid = parseInt(localStorage.getItem('gid'));
+
 
             let response = await axios.post(`http://localhost:3000/send-message/${gid}`, message, { headers: { 'Auth': token } });
 
-            console.log(response.data.message);
-            // localStorage.setItem('LastMessageIDLS', response.data.message.id);
-            // AddToLocalStorage(response.data.message);
-            // showMessages(response.data.message);
+            // console.log(response.data.message);
+
+
+            //SEND MESSAGE SOCKET
+            socket.emit('send-message', chat_message.value, gid);
+
         }
         catch (err) {
             console.log(err);
@@ -209,7 +259,7 @@ async function onSendMessage(e) {
 
 //SHOW MESSAGES ON SCREEN
 function showMessages(message) {
-    console.log(message);
+    // console.log(message);
     const newMessage = `<p>${message.user.name} : ${message.message}</p>`;
     chat_box.innerHTML += newMessage;
 }
@@ -231,7 +281,7 @@ function hideAddUser() {
 
 //SEARCH USER API CALL AFTER INITE FORM SUBMIT
 async function addUser(e) {
-    
+
     e.preventDefault();
 
     const gid = localStorage.getItem('gid');
@@ -248,31 +298,31 @@ async function addUser(e) {
 
         try {
 
-           add_user = {
-                email:add_user_email.value,
-                gid:gid
+            add_user = {
+                email: add_user_email.value,
+                gid: gid
             }
 
             const res = await axios.post('http://localhost:3000/add_user', add_user, { headers: { 'Auth': token } });
 
             // console.log(res.response.status);
 
-    
-                alert('User added to the group');
-                getGroup();
-            
+
+            alert('User added to the group');
+            getGroup();
+
 
 
         }
         catch (err) {
             console.log(err);
-            if(err.response.status == 403){
+            if (err.response.status == 403) {
                 alert(err.response.data.message);
             }
-            else if(err.response.status==404){
+            else if (err.response.status == 404) {
                 alert(err.response.data.message);
             }
-            else if(err.response.status===409){
+            else if (err.response.status === 409) {
                 // console.log(err.response.data);
                 alert(err.response.data.message);
             }
@@ -347,8 +397,8 @@ async function getGroup() {
         group_list.innerHTML = '';
 
         for (group in groups) {
-            console.log(typeof (groups[group].link));
-            group_list.innerHTML += `<li><button id=${groups[group].id} value='${groups[group].name}' onclick='getMessage(${groups[group].id},"${groups[group].link}")'>${groups[group].name}</button></li>`;
+            // console.log(typeof (groups[group].link));
+            group_list.innerHTML += `<li><button id=${groups[group].id} value='${groups[group].name}' onclick='getOldMessage(${groups[group].id},"${groups[group].link}")'>${groups[group].name}</button></li>`;
         }
 
         // const classBtn=document.getElementById("4");
@@ -507,7 +557,7 @@ async function showGroupMembers() {
                             </tr>`
 
                 group_members_list.innerHTML += tr;
-                
+
                 // group_members_list.innerHTML+=`<tr>
                 //             <td id='td_name'>komal</td>
                 //             <td id='role'>Admin</td>
