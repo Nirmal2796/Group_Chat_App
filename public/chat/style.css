@@ -276,6 +276,28 @@ main {
     cursor: pointer;
 }
 
+
+
+#input_image{
+    /* color: rgba(0, 0, 0, 0); */
+    display: none;
+}
+
+
+#input_image_label i{
+    cursor: pointer;
+    width: 3vw;
+    height: 3vw;
+    border-radius: 50%;
+    background-color: rgb(21, 21, 83);
+    color: white;
+    font-size: medium;
+    text-align: center;
+    line-height: 3vw;
+    cursor: pointer;
+}
+
+
 .chat_send {
     justify-self: center;
     align-content: center;
@@ -328,17 +350,20 @@ main {
 
 
 #send_message button {
-    width: 7vw;
+    width: 3vw;
     height: 7vh;
     border: none;
-    border-radius: 10px;
+    border-radius: 30px;
     background-color: rgb(21, 21, 83);
     color: white;
     font-size: medium;
     letter-spacing: 1px;
+    font-size: larger;
 }
 
+
 #chat_send:hover,
+#input_image_label i:hover,
 #group_form_div form #create:hover,
 #add_user_form_div #add:hover,
 #invite_form_div form button:hover,

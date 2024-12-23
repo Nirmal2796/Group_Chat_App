@@ -17,12 +17,18 @@ const group_members_div = document.getElementById('group_members_div');
 const group_members_list = document.getElementById('group_members_list');
 const add_user_email = document.getElementById('add_user_email');
 const add_user_form = document.getElementById('add_user_form');
+const file_input_image = document.getElementById('input_image');
 
 //HTML FORM ELEMENTS EVENT LISTENER
 send_message_form.addEventListener('submit', onSendMessage);
 group_form.addEventListener('submit', createGroup);
 invite_form.addEventListener('submit', inviteViaEmail);
 add_user_form.addEventListener('submit', addUser);
+
+
+//FILE INPUT EVENT LISTENER
+file_input_image.addEventListener('change', getFileName);
+
 
 //DOM CONTENT LOAD EVENT
 document.addEventListener('DOMContentLoaded', DomLoad);
@@ -33,7 +39,10 @@ const token = localStorage.getItem('token');
 
 
 //INTERVAL;
-let myInterval;
+// let myInterval;
+
+//MULTIMEDIA FILE
+let file = null;
 
 //SOCKET INITIALIZATION
 var socket = io({
@@ -46,7 +55,7 @@ var socket = io({
 //RECEIVE MESSAGE
 socket.on('receive-message', (message) => {
     // chat_box.innerHTML = '';
-    console.log(message);
+    // console.log(message);
     showMessages(message);
 })
 
@@ -67,7 +76,7 @@ async function DomLoad() {
 
 
 //GET OLD MESSAGES
-async function getOldMessage(gid,glink) {
+async function getOldMessage(gid, glink) {
 
     localStorage.setItem('gid', gid);
 
@@ -92,7 +101,7 @@ async function getOldMessage(gid,glink) {
 
 
     //JOIN ROOM
-    socket.emit('join-room',gid);
+    socket.emit('join-room', gid);
 
 }
 
@@ -231,20 +240,32 @@ async function onSendMessage(e) {
     else {
 
         try {
-            message = {
-                message: chat_message.value
+            let fileURL = null;
+            const gid = parseInt(localStorage.getItem('gid'));
+
+            if (file != null) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const res = await axios.post(`http://localhost:3000/upload-to-s3/${gid}`, formData, { headers: { 'Auth': token, 'Content-Type': 'multipart/form-data' } });
+                console.log(res);
+                fileURL = res.data.fileURL;
+
             }
 
-            const gid = parseInt(localStorage.getItem('gid'));
+
+            message = (fileURL == null) ? {
+                message: chat_message.value
+            } : {
+                message: fileURL
+            };
 
 
             let response = await axios.post(`http://localhost:3000/send-message/${gid}`, message, { headers: { 'Auth': token } });
 
-            // console.log(response.data.message);
 
 
             //SEND MESSAGE SOCKET
-            socket.emit('send-message', chat_message.value, gid);
+            socket.emit('send-message', chat_message.value, gid, fileURL);
 
         }
         catch (err) {
@@ -252,6 +273,7 @@ async function onSendMessage(e) {
         }
 
         send_message_form.reset();
+        file = null;
     }
 
 }
@@ -260,7 +282,20 @@ async function onSendMessage(e) {
 //SHOW MESSAGES ON SCREEN
 function showMessages(message) {
     // console.log(message);
-    const newMessage = `<p>${message.user.name} : ${message.message}</p>`;
+    let newMessage;
+
+    if (message.message.startsWith("https") || message.fileURL != null) {
+
+        const fileName = (message.fileURL == null) ? message.message.split(`${localStorage.getItem('gid')}/`)[1] : message.fileURL.split(`${localStorage.getItem('gid')}/`)[1];
+        
+        const href = (message.fileURL == null) ? message.message : message.fileURL;
+
+        newMessage = `<p>${message.user.name} :<a href="${href}"> ${fileName}</a></p>`;
+
+    }
+    else {
+        newMessage = `<p>${message.user.name} : ${message.message}</p>`;
+    }
     chat_box.innerHTML += newMessage;
 }
 
@@ -627,4 +662,13 @@ async function makeAdmin(userId, groupId) {
     catch (err) {
         console.log(err);
     }
+}
+
+//FILE IMAGE NAME
+function getFileName() {
+
+    console.log(file_input_image.files[0]);
+    file = file_input_image.files[0];
+
+    chat_message.value = `${file_input_image.files[0].name}`;
 }

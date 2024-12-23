@@ -65,16 +65,17 @@ io.on('connection',socket=>{
 
 
     //ON SEND MESSAGE EVENT
-    socket.on('send-message', (msg,room) => {       
+    socket.on('send-message', (msg,room,fileURL) => {       
         // console.log('message: ' + msg);
         data={
             message:msg,
-            user:socket.user
+            user:socket.user,
+            fileURL:fileURL
         }
         //RECEIVE MESSAGE
         // io.emit('receive-message',data);
 
-        console.log(room);
+        console.log(fileURL);
         io.to(room).emit('receive-message',data);
       });
       

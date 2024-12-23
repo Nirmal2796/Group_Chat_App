@@ -4,6 +4,8 @@ const Group = require('../models/group')
 const sequelize = require('../util/database');
 const { where, NUMBER, Op } = require('sequelize');
 
+const S3Services=require('../services/S3Services');
+
 
 exports.getMessage = async (req, res) => {
     try {
@@ -72,5 +74,32 @@ exports.sendMessage = async (req, res) => {
         await t.rollback();
         console.log(err);
         res.status(500).json({ success: false });
+    }
+}
+
+
+exports.uploadToS3 = async (req, res) => {
+    try {
+        const gid = req.params.gid;
+
+        const file=req.file;
+
+        // console.log('FILE>>>>>>', file);
+
+        // console.log(file);
+        // console.log(file.originalname);
+
+        const fileName = `${req.user.id}/${gid}/${file.originalname}`;  //folder/date.txt ;
+        
+
+        const fileURL = await S3Services.uploadToS3(file, fileName);
+
+        // console.log(fileURL);
+
+        res.status(200).json({ success: true , fileURL:fileURL});
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false });   
     }
 }
