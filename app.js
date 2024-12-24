@@ -8,6 +8,8 @@ const cors = require('cors');
 const helemt = require('helmet');
 const morgan = require('morgan');
 
+const sequelize = require('../util/database');
+
 const cron = require('cron');
 
 
@@ -108,19 +110,22 @@ Chat.belongsTo(Group);
 
 
 
-
 // Creating a cron job which runs on every 10 second
-const job = new cron.CronJob('* * 12 * * *', async function () {
+const job = new cron.CronJob('* 59 23 * * *', async function () {
+
     console.log('You will see this message every 10 second');
 
     const t = await sequelize.transaction();
 
     try {
 
+        const currentDate=new Date();
+
+    
         const oldChat = await Chat.findAll({
             where: {
                 createdAt: {
-                    [Op.lt]: new Date(new Date() - 24 * 60 * 60 * 1000)
+                    [Op.lt]: new Date(currentDate - 24 * 60 * 60 * 1000)
                 }
             }
         });
@@ -147,9 +152,13 @@ const job = new cron.CronJob('* * 12 * * *', async function () {
     }
 
 
-});
+}, // This function is executed when the job is started
+null, // This function is executed when the job stops
+true, // Start the job right now
+'Asia/Kolkata' // Time zone of this job.
+);
 
-job.start();
+
 
 
 
