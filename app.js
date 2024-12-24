@@ -1,73 +1,85 @@
+// Description: This file is the entry point of the application. It contains the code for creating the express server, setting up the middlewares, connecting to the database, defining the routes, and starting the server. It also contains the code for setting up the socket.io server and defining the socket.io events.
+
+//IMPORT PATH FS HTTP
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
 
+//IMPORT EXPRESS
 const express = require('express');
 
+//IMPORT CORS AND HELMET MORGAN
 const cors = require('cors');
 const helemt = require('helmet');
 const morgan = require('morgan');
 
+//IMPORT SEQUELIZE
 const sequelize = require('../util/database');
 
+//IMPORT CRON 
 const cron = require('cron');
 
 
 const app = express();
 
 const server = http.createServer(app); // Create HTTP server
-const io = require('socket.io')(server);
+const io = require('socket.io')(server); // Attach socket.io to the server instance
 
+//DOTENV CONFIG
 require('dotenv').config();
 
-
+//BODYPARSER
 const bodyParser = require('body-parser');
 
-const sequelize = require('./util/database');
 
-
+//IMPORT MODELS
 const User = require('./models/user');
 const Chat = require('./models/chat');
 const Group = require('./models/group');
 const User_Group = require('./models/user_group');
 const archivedChat = require('./models/archivedChat');
 
+//IMPORT ROUTES
 const userRouter = require('./routes/user');
 const chatRouter = require('./routes/chat');
 const groupRouter = require('./routes/group');
 
+//IMPORT SOCKET AUTHENTICATION MIDDLEWARE
 const socketAuthMiddleware = require('./middleware/socketUserAuthentication');
 
 
+//CREATE ACCESS LOG FILE
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 
-app.use(helemt({ contentSecurityPolicy: false }));
-app.use(morgan('combined', { stream: accessLogStream }));
+
+//MIDDLEWARES
+app.use(helemt({ contentSecurityPolicy: false })); //Helmet helps you secure your Express apps by setting various HTTP headers.
+app.use(morgan('combined', { stream: accessLogStream }));//Morgan is a HTTP request logger middleware for Node.js
 
 
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
-}));
+})); //CORS
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public')));//Serve static files
 
-app.use(bodyParser.json({ extended: false }));
+app.use(bodyParser.json({ extended: false }));//Body parser
 
 
+//ROUTES
 app.use(userRouter);
 app.use(chatRouter);
 app.use(groupRouter);
 
-
+//SOCKET AUTHENTICATION MIDDLEWARE
 io.use(socketAuthMiddleware.authentication);
+
 
 //SOCKET IO CONNECTION 
 io.on('connection', socket => {
 
-
     // console.log('SCOKET ID:::::',socket.id);
-
 
     //ON SEND MESSAGE EVENT
     socket.on('send-message', (msg, room, fileURL) => {
@@ -79,8 +91,6 @@ io.on('connection', socket => {
         }
         //RECEIVE MESSAGE
         // io.emit('receive-message',data);
-
-        console.log(fileURL);
         io.to(room).emit('receive-message', data);
     });
 
@@ -96,8 +106,11 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
+
 })
 
+
+//ASSOCIATIONS
 User.hasMany(Chat); //one to many
 Chat.belongsTo(User); //one to one
 
@@ -160,15 +173,12 @@ true, // Start the job right now
 
 
 
-
-
-
-
+//listen to the server
 sequelize
     .sync()
     // .sync({force:true})
     .then(result => {
         // app.listen(3000);
-        server.listen(3000);
+        server.listen(5000);//LISTEN TO SERVER
     })
     .catch(err => console.log(err));
