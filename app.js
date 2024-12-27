@@ -13,20 +13,23 @@ const cors = require('cors');
 const helemt = require('helmet');
 const morgan = require('morgan');
 
-//IMPORT SEQUELIZE
-const sequelize = require('../util/database');
+
 
 //IMPORT CRON 
 const cron = require('cron');
-
 
 const app = express();
 
 const server = http.createServer(app); // Create HTTP server
 const io = require('socket.io')(server); // Attach socket.io to the server instance
 
+
 //DOTENV CONFIG
 require('dotenv').config();
+
+//IMPORT SEQUELIZE
+const sequelize = require('./util/database');
+
 
 //BODYPARSER
 const bodyParser = require('body-parser');
@@ -179,6 +182,6 @@ sequelize
     // .sync({force:true})
     .then(result => {
         // app.listen(3000);
-        server.listen(5000);//LISTEN TO SERVER
+        server.listen(3000);//LISTEN TO SERVER
     })
     .catch(err => console.log(err));
