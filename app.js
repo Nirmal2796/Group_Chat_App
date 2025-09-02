@@ -52,6 +52,11 @@ const socketAuthMiddleware = require('./middleware/socketUserAuthentication');
 
 
 //CREATE ACCESS LOG FILE
+
+const logDirectory = '/home/ec2-user/Group_Chat_App/logs';
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdirSync(logDirectory, { recursive: true });
+}
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 
 
