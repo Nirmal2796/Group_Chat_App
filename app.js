@@ -186,7 +186,7 @@ sequelize
     .sync()
     // .sync({force:true})
     .then(result => {
-        // app.listen(3000);
-        server.listen(3000);//LISTEN TO SERVER
+        app.listen(3000);
+        // server.listen(3000);//LISTEN TO SERVER
     })
     .catch(err => console.log(err));
